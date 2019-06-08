@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>PWMs Settings</comment>
+<entry key="Adress4">1</entry>
+<entry key="Adress3">0</entry>
+<entry key="Adress2">0</entry>
+<entry key="Adress1">102</entry>
+<entry key="Adress0">192.168.1.200</entry>
+<entry key="AutoConnect">false</entry>
+<entry key="chkAsyncConnect">true</entry>
+<entry key="txtIdeleTimeSpan">3000</entry>
+</properties>
