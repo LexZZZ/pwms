@@ -12,8 +12,8 @@ public class PWM implements WorkHProcessHandler, Runnable {
     private ArrayList<SensorData> sensors = new ArrayList<>();
     private S7Client plc = new S7Client();
     private S7CpuInfo cpuInfo = new S7CpuInfo();
-    public static int i;
-    public int j;
+    private static int i;
+    private int j;
 
     private String ipAddress;
     private int rack;
@@ -28,7 +28,7 @@ public class PWM implements WorkHProcessHandler, Runnable {
      * Create object by a quantity
      * measurement sensors of setup
      *
-     * @param qtySensors
+     * @param qtySensors quantity sensors on PWM
      */
     public PWM(int qtySensors) {
         for (int i = 0; i < qtySensors; i++) {
@@ -125,7 +125,7 @@ public class PWM implements WorkHProcessHandler, Runnable {
 
             if (isConnected()) {
                 System.out.println(cpuInfo.asName() + ": geting a data");
-                getData();~
+                getData();
                 try {
                     TimeUnit.MILLISECONDS.sleep(100);
                 } catch (InterruptedException e) {
