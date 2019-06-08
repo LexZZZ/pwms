@@ -45,7 +45,7 @@ public class PWM implements WorkHProcessHandler, Runnable {
     @Override
     public int connectToPLC(byte connectionType, String ipAddress, int rack, int slot) {
         plc.setConnectionType(connectionType);
-        System.out.println(cpuInfo.asName() + ": connecting");
+        System.out.println(cpuInfo.asName() + ": connecting to " + ipAddress + ", " + rack + ", " + slot);
         int result = plc.connectTo(ipAddress, rack, slot);
         if (result == 0) {
             System.out.println("connected to   : " + ipAddress + " (Rack=" + rack + ", Slot=" + slot + ")");

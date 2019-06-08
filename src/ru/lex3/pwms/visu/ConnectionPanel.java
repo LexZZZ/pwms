@@ -386,7 +386,7 @@ class ConnectionPanel extends JFrame {
          */
         @Override
         public void focusLost(FocusEvent e) {
-            device.setIpAddress(ConnectionPanel.this.txtAdress0.getText());
+            device.setIpAddress(ConnectionPanel.this.txtAdress0.getText().replaceAll(" ", ""));
             //device.setIpAddress(ConnectionPanel.this.txtAdress1.getText());
             device.setRack(Integer.parseInt(ConnectionPanel.this.txtAdress3.getText()));
             device.setSlot(Integer.parseInt(ConnectionPanel.this.txtAdress4.getText()));
