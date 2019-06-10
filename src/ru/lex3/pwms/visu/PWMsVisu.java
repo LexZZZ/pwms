@@ -150,7 +150,6 @@ public class PWMsVisu extends JFrame {
         int x = 0, y = 0;
         for (int i = 0; i < 20; i++) {
             workPanels.add(new WorkPanel(new PWM(2), "A" + i, x, y));
-            
             if (y + 113 > 680) {
                 x = x + 257;
                 y = 0;
