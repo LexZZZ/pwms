@@ -63,7 +63,7 @@ class ConnectionPanel extends JFrame {
         add(contentPane);
         setResizable(false);
 
-        setIconImage(Toolkit.getDefaultToolkit().getImage(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/connectionSettings.Image16x16.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(PWMsVisu.class.getResource("/resources/connectionSettings.Image16x16.png")));
         //setIconImage(new darrylbu.icon.AlphaImageIcon(new ImageIcon(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/connectionSettings.Image16x16.png")), 0).getImage());
 
         contentPane.setSize(getWidth(), getHeight());
@@ -197,7 +197,7 @@ class ConnectionPanel extends JFrame {
             }
         });
         btnSaveConnectionSettings.setIcon(
-                new ImageIcon(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/btnSaveConnectionSettings.Image.png")));
+                new ImageIcon(PWMsVisu.class.getResource("/resources/btnSaveConnectionSettings.Image.png")));
         btnSaveConnectionSettings.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnSaveConnectionSettings.setMargin(new Insets(0, 0, 0, 0));
         btnSaveConnectionSettings.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -210,7 +210,7 @@ class ConnectionPanel extends JFrame {
                 btnConnect_actionPerformed(e);
             }
         });
-        btnConnect.setIcon(new ImageIcon(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/btnConnect.Image.png")));
+        btnConnect.setIcon(new ImageIcon(PWMsVisu.class.getResource("/resources/btnConnect.Image.png")));
         btnConnect.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnConnect.setMargin(new Insets(0, 0, 0, 0));
         btnConnect.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -223,7 +223,7 @@ class ConnectionPanel extends JFrame {
                 btnDisconnect_actionPerformed(e);
             }
         });
-        btnDisconnect.setIcon(new ImageIcon(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/btnDisconnect.Image.png")));
+        btnDisconnect.setIcon(new ImageIcon(PWMsVisu.class.getResource("/resources/btnDisconnect.Image.png")));
         btnDisconnect.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnDisconnect.setMargin(new Insets(0, 0, 0, 0));
         btnDisconnect.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -282,7 +282,7 @@ class ConnectionPanel extends JFrame {
             p.setProperty("AutoConnect", String.valueOf(chkAutoConnect.isSelected()));
             p.setProperty("chkAsyncConnect", String.valueOf(chkAsyncConnect.isSelected()));
 
-            File file = new File(PWMsVisu.class.getResource("/ru/lex3/pwms/settings/PWMsSettings.xml").getPath());
+            File file = new File(PWMsVisu.class.getResource("/settings/PWMsSettings.xml").getPath());
             FileOutputStream fos = new FileOutputStream(file.getAbsolutePath());
             p.storeToXML(fos, "PWMsVisu Settings", "UTF8");
             fos.close();

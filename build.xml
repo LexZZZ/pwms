@@ -48,10 +48,8 @@
 			fork="true">
             <classpath>
                 <pathelement path="${classes.dir}"/>
-                <!--
-				<pathelement path="${lib.dir}/ccis.jar"/>
-				-->
-            </classpath>
+      			<pathelement path="${lib.dir}/"/>
+	        </classpath>
 			<!--
             <jvmarg value="-Xmx128M"/>
 			-->

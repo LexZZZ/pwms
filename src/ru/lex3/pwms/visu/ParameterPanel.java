@@ -60,7 +60,7 @@ class ParameterPanel extends JFrame {
         add(contentPane);
         setResizable(false);
 
-        setIconImage(Toolkit.getDefaultToolkit().getImage(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/parameterSettings.Image16x16.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(PWMsVisu.class.getResource("/resources/parameterSettings.Image16x16.png")));
         //setIconImage(new darrylbu.icon.AlphaImageIcon(new ImageIcon(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/connectionSettings.Image16x16.png")), 0).getImage());
 
         contentPane.setSize(getWidth(), getHeight());
@@ -169,7 +169,7 @@ class ParameterPanel extends JFrame {
             }
         });
         btnOk.setIcon(
-                new ImageIcon(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/btnOk.Image.24x24.png")));
+                new ImageIcon(PWMsVisu.class.getResource("/resources/btnOk.Image.24x24.png")));
         btnOk.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnOk.setMargin(new Insets(0, 0, 0, 0));
         btnOk.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -182,7 +182,7 @@ class ParameterPanel extends JFrame {
                 btnCancel_actionPerformed(e);
             }
         });
-        btnCancel.setIcon(new ImageIcon(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/btnClose.Image.24x24.png")));
+        btnCancel.setIcon(new ImageIcon(PWMsVisu.class.getResource("/resources/btnClose.Image.24x24.png")));
         btnCancel.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnCancel.setMargin(new Insets(0, 0, 0, 0));
         btnCancel.setHorizontalTextPosition(SwingConstants.CENTER);

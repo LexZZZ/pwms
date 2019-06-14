@@ -2,7 +2,6 @@ package ru.lex3.pwms.visu;
 
 import ru.lex3.pwms.main.PWM;
 import ru.lex3.pwms.moka7.*;
-import ru.lex3.pwms.visu.disabledjpanel.*;
 import ru.lex3.pwms.util.*;
 
 import javax.swing.*;
@@ -20,7 +19,8 @@ import java.util.concurrent.Executors;
 public class PWMsVisu extends JFrame {
 
     private S7Client Device = new S7Client();
-    static ResourceBundle resources = ResourceBundle.getBundle("ru.lex3.pwms.resources.resources", new UTF8Control());
+
+    static ResourceBundle resources = ResourceBundle.getBundle("resources.resources", new UTF8Control());
     static int CountOpenDialogs = 0;
     ArrayList<WorkPanel> workPanels;
 
@@ -37,6 +37,7 @@ public class PWMsVisu extends JFrame {
      * Launch the application.
      */
     public static void main(String[] args) {
+
         EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -76,8 +77,7 @@ public class PWMsVisu extends JFrame {
         }
 
         setTitle("PWMsVisu welding mashines observer");
-
-        setIconImage(Toolkit.getDefaultToolkit().getImage(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/soldar.png")));
+        setIconImage(Toolkit.getDefaultToolkit().getImage(PWMsVisu.class.getResource("/resources/soldar.png")));
 
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -111,7 +111,7 @@ public class PWMsVisu extends JFrame {
         });
 
         btnEditConnectionSettings.setIcon(
-                new ImageIcon(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/btnEditConnectionSettings.Image.png")));
+                new ImageIcon(PWMsVisu.class.getResource("/resources/btnEditConnectionSettings.Image.png")));
         btnEditConnectionSettings.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnEditConnectionSettings.setMargin(new Insets(0, 0, 0, 0));
         btnEditConnectionSettings.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -137,14 +137,14 @@ public class PWMsVisu extends JFrame {
                 btnClose_actionPerformed(e);
             }
         });
-        btnClose.setIcon(new ImageIcon(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/btnClose.Image.png")));
+
+        btnClose.setIcon(new ImageIcon(PWMsVisu.class.getResource("/resources/btnClose.Image.png")));
         btnClose.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnClose.setMargin(new Insets(0, 0, 0, 0));
         btnClose.setHorizontalTextPosition(SwingConstants.CENTER);
         btnClose.setBounds(1122, 704, 68, 68);
         contentPane.add(btnClose);
         contentPane.setBackground(new Color(84, 84, 84));
-
 
         workPanels = new ArrayList<>();
         int x = 0, y = 0;
@@ -153,8 +153,9 @@ public class PWMsVisu extends JFrame {
             if (y + 113 > 680) {
                 x = x + 257;
                 y = 0;
-            } else
+            } else {
                 y = y + 115;
+            }
         }
         ExecutorService executor = Executors.newCachedThreadPool();
         for (WorkPanel workPanel : workPanels) {
@@ -187,7 +188,7 @@ public class PWMsVisu extends JFrame {
 
         // set UI language
         try {
-            SetLanguage((Locale) cmbLanguage.getSelectedItem());
+            setLanguage((Locale) cmbLanguage.getSelectedItem());
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getClass().getName() + " " + ex.getMessage(), "",
                     JOptionPane.ERROR_MESSAGE);
@@ -222,7 +223,7 @@ public class PWMsVisu extends JFrame {
     }
 
 
-    private void SetLanguage(Locale locale) {
+    private void setLanguage(Locale locale) {
         // set UI-Controls with actual Locale information
         // init ResourceManager
 
@@ -230,7 +231,7 @@ public class PWMsVisu extends JFrame {
         Locale.setDefault(locale);
 
         ResourceBundle.clearCache();
-        resources = ResourceBundle.getBundle("ru.lex3.pwms.resources.resources", locale, new UTF8Control());
+        resources = ResourceBundle.getBundle("resources.resources", locale, new UTF8Control());
         // set controls
         this.setTitle(resources.getString("main_Text"));
         this.lblLanguage.setText(resources.getString("lblLanguage_Text"));
@@ -243,7 +244,7 @@ public class PWMsVisu extends JFrame {
     private void cmbLanguage_itemStateChanged(ItemEvent e) {
         // set UI language
         try {
-            SetLanguage((Locale) cmbLanguage.getSelectedItem());
+            setLanguage((Locale) cmbLanguage.getSelectedItem());
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getClass().getName() + " " + ex.getMessage(), "",
                     JOptionPane.ERROR_MESSAGE);
@@ -259,7 +260,7 @@ public class PWMsVisu extends JFrame {
         try {
             setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             // open file
-            FileInputStream fis = new FileInputStream(PWMsVisu.class.getResource("/ru/lex3/pwms/settings/PWMsSettings.xml").getFile());
+            FileInputStream fis = new FileInputStream(PWMsVisu.class.getResource("/settings/PWMsSettings.xml").getFile());
             p.loadFromXML(fis);
 
             // load saved settiungs from PLCcomModbusSlaveSettings.xml

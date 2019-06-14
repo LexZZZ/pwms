@@ -14,6 +14,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
 public class WorkPanel extends JPanel {
+
     private PWM device;
     private String plcName;
     private static ConnectionPanel grbConnectionSettings;
@@ -126,7 +127,7 @@ public class WorkPanel extends JPanel {
                 btnParameterSettings_actionPerformed(e);
             }
         });
-        btnParameterSettings.setIcon(new ImageIcon(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/btnParameterSettings.Image24x24.png")));
+        btnParameterSettings.setIcon(new ImageIcon(PWMsVisu.class.getResource("/resources/btnParameterSettings.Image24x24.png")));
         btnParameterSettings.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnParameterSettings.setMargin(new Insets(0, 0, 0, 0));
         btnParameterSettings.setHorizontalTextPosition(SwingConstants.CENTER);
@@ -139,7 +140,7 @@ public class WorkPanel extends JPanel {
                 btnConnectionSettings_actionPerformed(e);
             }
         });
-        btnConnectionSettings.setIcon(new ImageIcon(PWMsVisu.class.getResource("/ru/lex3/pwms/resources/btnConnectionSettings.Image24x24.png")));
+        btnConnectionSettings.setIcon(new ImageIcon(PWMsVisu.class.getResource("/resources/btnConnectionSettings.Image24x24.png")));
         btnConnectionSettings.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnConnectionSettings.setMargin(new Insets(0, 0, 0, 0));
         btnConnectionSettings.setHorizontalTextPosition(SwingConstants.CENTER);
