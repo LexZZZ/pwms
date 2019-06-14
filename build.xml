@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+
+<!-- Build file for Background tasks and UI project -->
+<project name="PWMs observer" default="run" basedir=".">
+    
+    <!-- Source directory -->
+    <property name="src.dir" value="src"/>
+
+    <!-- build directory -->
+    <property name="build.dir" value="build"/>
+
+    <!-- Classes directory -->
+    <property name="classes.dir" value="build/classes"/>
+
+    <!-- Library directory -->
+    <property name="lib.dir" value="lib"/>
+    
+    <!-- Target - prepares directories -->
+    <target name="prepare">
+        <echo message="Preparing directories..."/>
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${lib.dir}"/>
+    </target>
+
+    <!-- Target - cleans project -->
+    <target name="clean" description="Removes all generated files">
+        <echo message="Cleaning all..."/>
+        <delete dir="${classes.dir}"/>
+        <echo message="Cleanup finished."/>
+    </target>
+
+    <!-- Target - compiles sources -->
+    <target name="compile" depends="prepare" description="Compiles all sources">
+        <echo message="Compiling sources..."/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}">
+			<!--	
+			<classpath>
+                <pathelement path="${lib.dir}/ccis.jar"/>
+            </classpath>
+			-->
+		</javac>
+    </target>
+    
+    <!-- Target - Runs application -->
+    <target name="run" depends="compile" description="Runs application">		
+        <echo message="Running application..."/>
+        <java classname="ru.lex3.pwms.visu.PWMsVisu"
+			fork="true">
+            <classpath>
+                <pathelement path="${classes.dir}"/>
+                <!--
+				<pathelement path="${lib.dir}/ccis.jar"/>
+				-->
+            </classpath>
+			<!--
+            <jvmarg value="-Xmx128M"/>
+			-->
+        </java>
+    </target>
+    
+</project>
