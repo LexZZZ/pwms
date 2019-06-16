@@ -32,9 +32,8 @@ public class PWM implements WorkHProcessHandler, Runnable {
      */
     public PWM(int qtySensors) {
         for (int i = 0; i < qtySensors; i++) {
-            sensors.add(new SensorData());
+            sensors.add(new SensorData(4,  i * 42));
         }
-        j = i++;
     }
 
     @Override
@@ -67,19 +66,34 @@ public class PWM implements WorkHProcessHandler, Runnable {
 
     @Override
     public void getData() {
-        byte[] buffer = new byte[34];
-
-        for (SensorData sensor : sensors) {
-            plc.readArea(S7.S7_AREA_DB, sensor.dbNr, sensor.start, 34, buffer);
+        byte[] buffer = new byte[128];
+		
+		
+        for (SensorData sensor : sensors) { 
+			plc.readArea(S7.S7_AREA_DB, sensor.dbNr, sensor.start, 41, buffer);		
             sensor.currentData = S7.getFloatAt(buffer, 0);
-            sensor.lastMeasure = S7.getFloatAt(buffer, 4);
-            sensor.scaleMax = S7.getFloatAt(buffer, 8);
-            sensor.scaleMin = S7.getFloatAt(buffer, 12);
+            sensor.calibratedValue = S7.getFloatAt(buffer, 4);
+            sensor.lastMeasure = S7.getFloatAt(buffer, 8);
+            sensor.timeDelayScore = S7.getDIntAt(buffer, 12);
             for (int i = 0; i < sensor.tollerance.length; i++)
                 sensor.tollerance[i] = S7.getFloatAt(buffer, i * 4 + 16);
-            sensor.errMeasure = S7.getBitAt(buffer, 33, 0);
-            sensor.teaching = S7.getBitAt(buffer, 33, 1);
-        }
+            sensor.scaleMin = S7.getFloatAt(buffer, 32);
+            sensor.scaleMax = S7.getFloatAt(buffer, 36);
+            sensor.errMeasure = S7.getBitAt(buffer, 40, 0);
+            sensor.teaching = S7.getBitAt(buffer, 40, 1);
+			
+		System.out.println("Cur data: " + sensor.currentData);
+		System.out.println("CalVal: " + sensor.calibratedValue);
+		System.out.println("Last measure: " + sensor.lastMeasure);
+		System.out.println("TON: " + sensor.timeDelayScore);
+		System.out.println("Scale min: " + sensor.scaleMin);
+		System.out.println("Scale max: " + sensor.scaleMax);
+			
+			
+			
+		
+		}
+		
     }
 
     @Override
@@ -87,11 +101,11 @@ public class PWM implements WorkHProcessHandler, Runnable {
         byte[] buffer = new byte[16];
 
         for (SensorData sensor : sensors) {
-            S7.setFloatAt(buffer, 8, sensor.scaleMax);
-            S7.setFloatAt(buffer, 12, sensor.scaleMax);
             for (int i = 0; i < sensor.tollerance.length; i++)
                 S7.setFloatAt(buffer, 16 + i * 4, sensor.tollerance[i]);
-            plc.writeArea(S7.S7_AREA_DB, sensor.dbNr, sensor.start + 8, 16, buffer);
+            S7.setFloatAt(buffer, 32, sensor.scaleMin);
+            S7.setFloatAt(buffer, 36, sensor.scaleMax);           
+            plc.writeArea(S7.S7_AREA_DB, sensor.dbNr, sensor.start + 16, 16, buffer);
         }
     }
 

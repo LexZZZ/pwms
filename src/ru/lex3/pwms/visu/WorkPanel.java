@@ -13,7 +13,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class WorkPanel extends JPanel {
+public class WorkPanel extends JPanel implements Runable{
 
     private PWM device;
     private String plcName;
