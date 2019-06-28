@@ -1,6 +1,7 @@
 package ru.lex3.pwms.visu;
 
 import ru.lex3.pwms.main.PWM;
+import ru.lex3.pwms.main.S7Data;
 import ru.lex3.pwms.moka7.S7Client;
 import ru.lex3.pwms.visu.disabledjpanel.DisabledJPanel;
 
@@ -13,7 +14,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class WorkPanel extends JPanel implements Runable{
+public class WorkPanel extends JPanel implements Runnable {
 
     private PWM device;
     private String plcName;
@@ -206,5 +207,32 @@ public class WorkPanel extends JPanel implements Runable{
 
     public PWM getDevice() {
         return device;
+    }
+
+    /**
+     * When an object implementing interface <code>Runnable</code> is used
+     * to create a thread, starting the thread causes the object's
+     * <code>run</code> method to be called in that separately executing
+     * thread.
+     * <p>
+     * The general contract of the method <code>run</code> is that it may
+     * take any action whatsoever.
+     *
+     * @see Thread#run()
+     */
+    @Override
+    public void run() {
+        new Thread(device).start();
+        System.out.println("run workPanel");
+        while (!Thread.currentThread().isInterrupted()) {
+            System.out.println("Thread workPanel");
+            txtTopCurrentMeasure.setText(String.valueOf(((S7Data)device.getSensors().get(0)).currentData));
+            txtBottomCurrentMeasure.setText(String.valueOf(((S7Data)device.getSensors().get(1)).currentData));
+            txtTopLastMeasure.setText(String.valueOf(((S7Data)device.getSensors().get(0)).lastMeasure));
+            txtBottomLastMeasure.setText(String.valueOf(((S7Data)device.getSensors().get(1)).lastMeasure));
+            System.out.println(((S7Data)device.getSensors().get(0)).lastMeasure);
+            System.out.println(((S7Data)device.getSensors().get(1)).lastMeasure);
+        }
+
     }
 }

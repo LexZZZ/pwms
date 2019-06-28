@@ -1,6 +1,7 @@
 package ru.lex3.pwms.visu;
 
 import ru.lex3.pwms.main.PWM;
+import ru.lex3.pwms.main.S7ConnectionParameters;
 import ru.lex3.pwms.moka7.*;
 
 import javax.swing.*;
@@ -101,7 +102,7 @@ class ConnectionPanel extends JFrame {
         txtAdress0.setFocusLostBehavior(JFormattedTextField.COMMIT);
         //We can't just setText on the formatted text
         //field, since its value will remain set.
-        txtAdress0.setValue(device.getIpAddress());
+        txtAdress0.setValue(device.getPlc().getConnectionParameters().getIpAddres());
         txtAdress0.setColumns(10);
         txtAdress0.setBounds(145, 12, 90, 20);
         txtAdress0.addFocusListener(new FocusSelect());
@@ -129,7 +130,7 @@ class ConnectionPanel extends JFrame {
         txtAdress3 = new JFormattedTextField(new NumberFormatterInt(99).getFormatter());
         txtAdress3.setFocusLostBehavior(JFormattedTextField.COMMIT);
         txtAdress3.setColumns(10);
-        txtAdress3.setText(Integer.toString(device.getRack()));
+        txtAdress3.setText(Integer.toString(((S7ConnectionParameters)device.getPlc().getConnectionParameters()).getRack()));
         //txtAdress3.setBounds(145, 87, 90, 20);
         txtAdress3.setBounds(145, 37, 90, 20);
         txtAdress3.addFocusListener(new FocusSelect());
@@ -138,7 +139,7 @@ class ConnectionPanel extends JFrame {
         txtAdress4 = new JFormattedTextField(new NumberFormatterInt(99).getFormatter());
         txtAdress4.setFocusLostBehavior(JFormattedTextField.COMMIT);
         txtAdress4.setColumns(10);
-        txtAdress4.setText(Integer.toString(device.getSlot()));
+        txtAdress4.setText(Integer.toString(((S7ConnectionParameters)device.getPlc().getConnectionParameters()).getSlot()));
         txtAdress4.setBounds(145, 62, 90, 20);
         //txtAdress4.setBounds(145, 112, 90, 20);
         txtAdress4.addFocusListener(new FocusSelect());
@@ -157,7 +158,7 @@ class ConnectionPanel extends JFrame {
         contentPane.add(lblAsyncConnect);
 
         chkAutoConnect = new JCheckBox("");
-        chkAutoConnect.setSelected(device.isAutoConnect());
+        chkAutoConnect.setSelected(device.getPlc().getConnectionParameters().isAutoConnect());
         chkAutoConnect.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 chkAutoConnect_itemStateChanged(e);
@@ -169,13 +170,13 @@ class ConnectionPanel extends JFrame {
         txtIdleTimeSpan = new JFormattedTextField(new NumberFormatterInt(5000).getFormatter());
         txtIdleTimeSpan.setFocusLostBehavior(JFormattedTextField.COMMIT);
         txtIdleTimeSpan.setColumns(10);
-        txtIdleTimeSpan.setText(Long.toString(device.getIdleTimeUntilConnect()));
+        txtIdleTimeSpan.setText(Long.toString(device.getPlc().getConnectionParameters().getIdleTimeUntilConnect()));
         txtIdleTimeSpan.setBounds(354, 37, 36, 20);
         txtIdleTimeSpan.addFocusListener(new FocusSelect());
         contentPane.add(txtIdleTimeSpan);
 
         chkAsyncConnect = new JCheckBox("");
-        chkAsyncConnect.setSelected(device.isAsyncConnect());
+        chkAsyncConnect.setSelected(device.getPlc().getConnectionParameters().isAsyncConnect());
         chkAsyncConnect.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 chkAsyncConnect_itemStateChanged(e);
@@ -241,7 +242,7 @@ class ConnectionPanel extends JFrame {
         // Example asynchronous/ synchronous Connect
         if (chkAsyncConnect.isSelected()) {
             // asynchronous call
-            device.connectToPLC(S7.OP, txtAdress0.getText(), Integer.parseInt(txtAdress3.getText()), Integer.parseInt(txtAdress4.getText()));
+            device.getPlc().connectTo();
         } else {
             // synchronous call (standard)
             /*ConnectResult res = Device.connect();
@@ -259,7 +260,7 @@ class ConnectionPanel extends JFrame {
     }
 
     private void btnDisconnect_actionPerformed(ActionEvent e) {
-        device.disconnectFromPLC();
+        device.getPlc().disconnect();
     }
 
     private void btnSaveConnectionSettings_actionPerformed(ActionEvent arg) {
@@ -308,11 +309,11 @@ class ConnectionPanel extends JFrame {
 
     private void chkAutoConnect_itemStateChanged(ItemEvent e) {
         txtIdleTimeSpan.setEnabled(chkAutoConnect.isSelected());
-        device.setAutoConnect(chkAutoConnect.isSelected());
+        device.getPlc().getConnectionParameters().setAutoConnect(chkAutoConnect.isSelected());
     }
 
     private void chkAsyncConnect_itemStateChanged(ItemEvent e) {
-        device.setAsyncConnect(chkAsyncConnect.isSelected());
+        device.getPlc().getConnectionParameters().setAsyncConnect(chkAsyncConnect.isSelected());
     }
 
     //A convenience method for creating a MaskFormatter.
@@ -386,11 +387,11 @@ class ConnectionPanel extends JFrame {
          */
         @Override
         public void focusLost(FocusEvent e) {
-            device.setIpAddress(ConnectionPanel.this.txtAdress0.getText().replaceAll(" ", ""));
+            device.getPlc().getConnectionParameters().setIpAddress(ConnectionPanel.this.txtAdress0.getText().replaceAll(" ", ""));
             //device.setIpAddress(ConnectionPanel.this.txtAdress1.getText());
-            device.setRack(Integer.parseInt(ConnectionPanel.this.txtAdress3.getText()));
-            device.setSlot(Integer.parseInt(ConnectionPanel.this.txtAdress4.getText()));
-            device.setIdleTimeUntilConnect(Integer.parseInt((ConnectionPanel.this.txtIdleTimeSpan.getText())));
+            ((S7ConnectionParameters)device.getPlc().getConnectionParameters()).setRack(Integer.parseInt(ConnectionPanel.this.txtAdress3.getText()));
+            ((S7ConnectionParameters)device.getPlc().getConnectionParameters()).setSlot(Integer.parseInt(ConnectionPanel.this.txtAdress4.getText()));
+            device.getPlc().getConnectionParameters().setIdleTimeUntilConnect(Integer.parseInt((ConnectionPanel.this.txtIdleTimeSpan.getText())));
         }
     }
 

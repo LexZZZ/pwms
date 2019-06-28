@@ -1,121 +1,21 @@
 package ru.lex3.pwms.main;
 
-import ru.lex3.pwms.interfaces.WorkHProcessHandler;
-import ru.lex3.pwms.moka7.S7;
+import ru.lex3.pwms.interfaces.*;
 import ru.lex3.pwms.moka7.S7Client;
-import ru.lex3.pwms.moka7.S7CpuInfo;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class PWM implements WorkHProcessHandler, Runnable {
-    private ArrayList<SensorData> sensors = new ArrayList<>();
-    private S7Client plc = new S7Client();
-    private S7CpuInfo cpuInfo = new S7CpuInfo();
-    private static int i;
-    private int j;
+public class PWM implements Runnable {
+    private PLC plc;
 
-    private String ipAddress;
-    private int rack;
-    private int slot;
-    private boolean asyncConnect = true;
-    private boolean autoConnect = false;
-    public boolean sendData = false;
+    private ArrayList<PLCData> sensors;
+    private PLCDataPerformer dataPerformer;
 
-    private long idleTimeUntilConnect = 3000;
+    private PLCConnectionSettingsLoader plcSettingsLoader;
 
-    /**
-     * Create object by a quantity
-     * measurement sensors of setup
-     *
-     * @param qtySensors quantity sensors on PWM
-     */
-    public PWM(int qtySensors) {
-        for (int i = 0; i < qtySensors; i++) {
-            sensors.add(new SensorData(4,  i * 42));
-        }
-    }
-
-    @Override
-    public int connectToPLC(String ipAddress, int rack, int slot) {
-        return connectToPLC(S7.PG, ipAddress, rack, slot);
-    }
-
-    @Override
-    public int connectToPLC(byte connectionType, String ipAddress, int rack, int slot) {
-        plc.setConnectionType(connectionType);
-        System.out.println(cpuInfo.asName() + ": connecting to " + ipAddress + ", " + rack + ", " + slot);
-        int result = plc.connectTo(ipAddress, rack, slot);
-        if (result == 0) {
-            System.out.println("connected to   : " + ipAddress + " (Rack=" + rack + ", Slot=" + slot + ")");
-            System.out.println("PDU ne  gotiated : " + plc.pduLength() + " bytes");
-        }
-        return result;
-    }
-
-    @Override
-    public void disconnectFromPLC() {
-        System.out.println(cpuInfo.asName() + j + ": disconnecting");
-        plc.disconnect();
-    }
-
-    @Override
-    public boolean isConnected() {
-        return plc.connected;
-    }
-
-    @Override
-    public void getData() {
-        byte[] buffer = new byte[128];
-		
-		
-        for (SensorData sensor : sensors) { 
-			plc.readArea(S7.S7_AREA_DB, sensor.dbNr, sensor.start, 41, buffer);		
-            sensor.currentData = S7.getFloatAt(buffer, 0);
-            sensor.calibratedValue = S7.getFloatAt(buffer, 4);
-            sensor.lastMeasure = S7.getFloatAt(buffer, 8);
-            sensor.timeDelayScore = S7.getDIntAt(buffer, 12);
-            for (int i = 0; i < sensor.tollerance.length; i++)
-                sensor.tollerance[i] = S7.getFloatAt(buffer, i * 4 + 16);
-            sensor.scaleMin = S7.getFloatAt(buffer, 32);
-            sensor.scaleMax = S7.getFloatAt(buffer, 36);
-            sensor.errMeasure = S7.getBitAt(buffer, 40, 0);
-            sensor.teaching = S7.getBitAt(buffer, 40, 1);
-			
-		System.out.println("Cur data: " + sensor.currentData);
-		System.out.println("CalVal: " + sensor.calibratedValue);
-		System.out.println("Last measure: " + sensor.lastMeasure);
-		System.out.println("TON: " + sensor.timeDelayScore);
-		System.out.println("Scale min: " + sensor.scaleMin);
-		System.out.println("Scale max: " + sensor.scaleMax);
-			
-			
-			
-		
-		}
-		
-    }
-
-    @Override
-    public void setData() {
-        byte[] buffer = new byte[16];
-
-        for (SensorData sensor : sensors) {
-            for (int i = 0; i < sensor.tollerance.length; i++)
-                S7.setFloatAt(buffer, 16 + i * 4, sensor.tollerance[i]);
-            S7.setFloatAt(buffer, 32, sensor.scaleMin);
-            S7.setFloatAt(buffer, 36, sensor.scaleMax);           
-            plc.writeArea(S7.S7_AREA_DB, sensor.dbNr, sensor.start + 16, 16, buffer);
-        }
-    }
-
-    public ArrayList<SensorData> getSensors() {
-        return sensors;
-    }
-
-    public S7Client getPlc() {
-        return plc;
-    }
+    private PLCConnectionSettingsSaver plcSettingsSaver;
+    private boolean sendData = false;
 
     /**
      * When an object implementing interface <code>Runnable</code> is used
@@ -137,29 +37,34 @@ public class PWM implements WorkHProcessHandler, Runnable {
                 e.printStackTrace();
             }
 
-            if (isConnected()) {
-                System.out.println(cpuInfo.asName() + ": geting a data");
-                getData();
-                try {
-                    TimeUnit.MILLISECONDS.sleep(100);
-                } catch (InterruptedException e) {
-                    System.out.println("Class PWM, method run()");
-                    e.printStackTrace();
-                }
-                if (sendData)
-                    setData();
-            } else {
-                if (sendData)
-                    sendData = false;
-                if (autoConnect) {
-                    System.out.println(cpuInfo.asName() + ": autoconnect");
+            if (plc.isConnected()) {
+
+                // System.out.println(cpuInfo.asName() + ": geting a data");
+                System.out.println(": geting a data");
+                for (PLCData plcData : sensors) {
+                    dataPerformer.readDataFromPLC(plcData);
                     try {
-                        TimeUnit.MILLISECONDS.sleep(idleTimeUntilConnect);
+                        TimeUnit.MILLISECONDS.sleep(100);
                     } catch (InterruptedException e) {
                         System.out.println("Class PWM, method run()");
                         e.printStackTrace();
                     }
-                    connectToPLC(ipAddress, rack, slot);
+                    if (sendData)
+                        dataPerformer.writeDataToPLC(plcData);
+                }
+            } else {
+                if (sendData)
+                    sendData = false;
+                if (plc.getConnectionParameters().isAutoConnect()) {
+                    //   System.out.println(cpuInfo.asName() + ": autoconnect");
+                    System.out.println(": autoconnect");
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(plc.getConnectionParameters().getIdleTimeUntilConnect());
+                    } catch (InterruptedException e) {
+                        System.out.println("Class PWM, method run()");
+                        e.printStackTrace();
+                    }
+                    plc.connectTo();
                 }
             }
 
@@ -167,51 +72,24 @@ public class PWM implements WorkHProcessHandler, Runnable {
 
     }
 
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
+    public ArrayList<PLCData> getSensors() {
+        return sensors;
     }
 
-    public void setRack(int rack) {
-        this.rack = rack;
+    public void setSensors(ArrayList<PLCData> sensors) {
+        this.sensors = sensors;
     }
 
-    public void setSlot(int slot) {
-        this.slot = slot;
+    public PLC getPlc() {
+        return plc;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
+    public void setPlc(PLC plc) {
+        this.plc = plc;
     }
 
-    public int getRack() {
-        return rack;
+    public void setDataPerformer(PLCDataPerformer dataPerformer) {
+        this.dataPerformer = dataPerformer;
     }
 
-    public int getSlot() {
-        return slot;
-    }
-
-    public boolean isAsyncConnect() {
-        return asyncConnect;
-    }
-
-    public void setAsyncConnect(boolean asyncConnect) {
-        this.asyncConnect = asyncConnect;
-    }
-
-    public boolean isAutoConnect() {
-        return autoConnect;
-    }
-
-    public void setAutoConnect(boolean autoConnect) {
-        this.autoConnect = autoConnect;
-    }
-
-    public long getIdleTimeUntilConnect() {
-        return idleTimeUntilConnect;
-    }
-
-    public void setIdleTimeUntilConnect(long idleTimeUntilConnect) {
-        this.idleTimeUntilConnect = idleTimeUntilConnect;
-    }
 }

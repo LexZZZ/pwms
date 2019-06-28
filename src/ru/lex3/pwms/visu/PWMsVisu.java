@@ -1,6 +1,7 @@
 package ru.lex3.pwms.visu;
 
-import ru.lex3.pwms.main.PWM;
+import ru.lex3.pwms.interfaces.*;
+import ru.lex3.pwms.main.*;
 import ru.lex3.pwms.moka7.*;
 import ru.lex3.pwms.util.*;
 
@@ -17,8 +18,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class PWMsVisu extends JFrame {
-
-    private S7Client Device = new S7Client();
 
     static ResourceBundle resources = ResourceBundle.getBundle("resources.resources", new UTF8Control());
     static int CountOpenDialogs = 0;
@@ -148,8 +147,29 @@ public class PWMsVisu extends JFrame {
 
         workPanels = new ArrayList<>();
         int x = 0, y = 0;
+        PWM pwm;
+        PLC plc;
+        ArrayList<PLCData> sensors;
+        PLCData plcData;
+        PLCDataPerformer plcDataPerformer;
+
         for (int i = 0; i < 20; i++) {
-            workPanels.add(new WorkPanel(new PWM(2), "A" + i, x, y));
+            pwm = new PWM();
+            plc = new S7Client(new S7ConnectionParameters(new String[]{}, new int[]{}, new boolean[]{}));
+
+            sensors = new ArrayList<>();
+            for (int j = 0; j < 2; j++) {
+                plcData = new S7Data(new S7ServiceData(plc, new int[]{S7.S7_AREA_DB, 4, j * 42, 42}));
+                sensors.add(plcData);
+            }
+
+            plcDataPerformer = new S7DataPerformer();
+
+            pwm.setPlc(plc);
+            pwm.setDataPerformer(plcDataPerformer);
+            pwm.setSensors(sensors);
+
+            workPanels.add(new WorkPanel(pwm, "A" + i, x, y));
             if (y + 113 > 680) {
                 x = x + 257;
                 y = 0;
@@ -160,7 +180,7 @@ public class PWMsVisu extends JFrame {
         ExecutorService executor = Executors.newCachedThreadPool();
         for (WorkPanel workPanel : workPanels) {
             add(workPanel);
-            executor.execute(workPanel.getDevice());
+            executor.execute(workPanel);
         }
     }
 
@@ -201,19 +221,22 @@ public class PWMsVisu extends JFrame {
     }
 
     private void formWindowClosing(WindowEvent e) {
-        if (Device != null) {
-            Device.disconnect();
+        for (WorkPanel workPanel : workPanels) {
+            if (workPanel.getDevice().getPlc() != null) {
+                workPanel.getDevice().getPlc().disconnect();
+            }
         }
     }
 
     private void btnClose_actionPerformed(ActionEvent e) {
         try {
             this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-            if (Device != null) {
-                // unload and dispose all objects
-                Device.disconnect();
-                Device = null;
+            for (WorkPanel workPanel : workPanels) {
+                if (workPanel.getDevice().getPlc() != null) {
+                    // unload and dispose all objects
+                    workPanel.getDevice().getPlc().disconnect();
+                   // workPanel.getDevice().getPlc() = null;
+                }
             }
 
         } finally {
@@ -315,7 +338,7 @@ public class PWMsVisu extends JFrame {
                         JOptionPane.INFORMATION_MESSAGE);
                 return;
             }
-            Device.disconnect();
+            //Device.disconnect();
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getClass().getName() + " " + ex.getMessage(), "",

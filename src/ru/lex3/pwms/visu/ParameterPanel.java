@@ -2,6 +2,7 @@ package ru.lex3.pwms.visu;
 
 
 import ru.lex3.pwms.main.PWM;
+import ru.lex3.pwms.main.S7Data;
 import ru.lex3.pwms.moka7.S7Client;
 
 import javax.swing.*;
@@ -89,7 +90,7 @@ class ParameterPanel extends JFrame {
         txtTopSensorMin = new JFormattedTextField(new NumberFormatterFloat(-9.99, 9.99).getFormatter());
         txtTopSensorMin.setHorizontalAlignment(SwingConstants.CENTER);
         txtTopSensorMin.setFocusLostBehavior(JFormattedTextField.COMMIT);
-        txtTopSensorMin.setValue(device.getSensors().get(0).scaleMin);
+        txtTopSensorMin.setValue(((S7Data)device.getSensors().get(0)).scaleMin);
         txtTopSensorMin.setBounds(70, 37, 60, 20);
         txtTopSensorMin.addFocusListener(new FocusSelect());
         contentPane.add(txtTopSensorMin);
@@ -97,7 +98,7 @@ class ParameterPanel extends JFrame {
         txtBottomSensorMin = new JFormattedTextField(new NumberFormatterFloat(-9.99, 9.99).getFormatter());
         txtBottomSensorMin.setHorizontalAlignment(SwingConstants.CENTER);
         txtBottomSensorMin.setFocusLostBehavior(JFormattedTextField.COMMIT);
-        txtBottomSensorMin.setValue(device.getSensors().get(1).scaleMin);
+        txtBottomSensorMin.setValue(((S7Data)device.getSensors().get(1)).scaleMin);
         txtBottomSensorMin.setBounds(70, 57, 60, 20);
         txtBottomSensorMin.addFocusListener(new FocusSelect());
         contentPane.add(txtBottomSensorMin);
@@ -109,7 +110,7 @@ class ParameterPanel extends JFrame {
         txtTopSensorMax = new JFormattedTextField(new NumberFormatterFloat(99.99).getFormatter());
         txtTopSensorMax.setHorizontalAlignment(SwingConstants.CENTER);
         txtTopSensorMax.setFocusLostBehavior(JFormattedTextField.COMMIT);
-        txtTopSensorMax.setValue(device.getSensors().get(0).scaleMax);
+        txtTopSensorMax.setValue(((S7Data)device.getSensors().get(0)).scaleMax);
         txtTopSensorMax.setBounds(130, 37, 60, 20);
         txtTopSensorMax.addFocusListener(new FocusSelect());
         contentPane.add(txtTopSensorMax);
@@ -117,7 +118,7 @@ class ParameterPanel extends JFrame {
         txtBottomSensorMax = new JFormattedTextField(new NumberFormatterFloat(99.99).getFormatter());
         txtBottomSensorMax.setHorizontalAlignment(SwingConstants.CENTER);
         txtBottomSensorMax.setFocusLostBehavior(JFormattedTextField.COMMIT);
-        txtBottomSensorMax.setValue(device.getSensors().get(1).scaleMax);
+        txtBottomSensorMax.setValue(((S7Data)device.getSensors().get(1)).scaleMax);
         txtBottomSensorMax.setBounds(130, 57, 60, 20);
         txtBottomSensorMax.addFocusListener(new FocusSelect());
         contentPane.add(txtBottomSensorMax);
@@ -129,7 +130,7 @@ class ParameterPanel extends JFrame {
         txtTopSensorTolerance1 = new JFormattedTextField(new NumberFormatterFloat(3.99).getFormatter());
         txtTopSensorTolerance1.setHorizontalAlignment(SwingConstants.CENTER);
         txtTopSensorTolerance1.setFocusLostBehavior(JFormattedTextField.COMMIT);
-        txtTopSensorTolerance1.setValue(device.getSensors().get(0).tollerance[0]);
+        txtTopSensorTolerance1.setValue(((S7Data)device.getSensors().get(0)).tollerance[0]);
         txtTopSensorTolerance1.setBounds(195, 37, 60, 20);
         txtTopSensorTolerance1.addFocusListener(new FocusSelect());
         contentPane.add(txtTopSensorTolerance1);
@@ -137,7 +138,7 @@ class ParameterPanel extends JFrame {
         txtBottomSensorTolerance1 = new JFormattedTextField(new NumberFormatterFloat(3.99).getFormatter());
         txtBottomSensorTolerance1.setHorizontalAlignment(SwingConstants.CENTER);
         txtBottomSensorTolerance1.setFocusLostBehavior(JFormattedTextField.COMMIT);
-        txtBottomSensorTolerance1.setValue(device.getSensors().get(1).tollerance[0]);
+        txtBottomSensorTolerance1.setValue(((S7Data)device.getSensors().get(1)).tollerance[0]);
         txtBottomSensorTolerance1.setBounds(195, 57, 60, 20);
         txtBottomSensorTolerance1.addFocusListener(new FocusSelect());
         contentPane.add(txtBottomSensorTolerance1);
@@ -148,7 +149,7 @@ class ParameterPanel extends JFrame {
         txtTopSensorTolerance2 = new JFormattedTextField(new NumberFormatterFloat(3.99).getFormatter());
         txtTopSensorTolerance2.setHorizontalAlignment(SwingConstants.CENTER);
         txtTopSensorTolerance2.setFocusLostBehavior(JFormattedTextField.COMMIT);
-        txtTopSensorTolerance2.setValue(device.getSensors().get(0).tollerance[1]);
+        txtTopSensorTolerance2.setValue(((S7Data)device.getSensors().get(0)).tollerance[1]);
         txtTopSensorTolerance2.setBounds(255, 37, 60, 20);
         txtTopSensorTolerance2.addFocusListener(new FocusSelect());
         contentPane.add(txtTopSensorTolerance2);
@@ -156,7 +157,7 @@ class ParameterPanel extends JFrame {
         txtBottomSensorTolerance2 = new JFormattedTextField(new NumberFormatterFloat(3.99).getFormatter());
         txtBottomSensorTolerance2.setHorizontalAlignment(SwingConstants.CENTER);
         txtBottomSensorTolerance2.setFocusLostBehavior(JFormattedTextField.COMMIT);
-        txtBottomSensorTolerance2.setValue(device.getSensors().get(1).tollerance[1]);
+        txtBottomSensorTolerance2.setValue(((S7Data)device.getSensors().get(1)).tollerance[1]);
         txtBottomSensorTolerance2.setBounds(255, 57, 60, 20);
         txtBottomSensorTolerance2.addFocusListener(new FocusSelect());
         contentPane.add(txtBottomSensorTolerance2);
@@ -198,17 +199,17 @@ class ParameterPanel extends JFrame {
     private void btnOk_actionPerformed(ActionEvent e) {
         try {
             this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            device.getSensors().get(0).scaleMin = Float.parseFloat(ParameterPanel.this.txtTopSensorMin.getText().replace(",", "."));
-            device.getSensors().get(1).scaleMin = Float.parseFloat(ParameterPanel.this.txtBottomSensorMin.getText().replace(",", "."));
-            device.getSensors().get(0).scaleMax = Float.parseFloat(ParameterPanel.this.txtTopSensorMax.getText().replace(",", "."));
-            device.getSensors().get(1).scaleMax = Float.parseFloat(ParameterPanel.this.txtBottomSensorMax.getText().replace(",", "."));
-            device.getSensors().get(0).tollerance[0] = Float.parseFloat(ParameterPanel.this.txtTopSensorTolerance1.getText().replace(",", "."));
-            device.getSensors().get(1).tollerance[0] = Float.parseFloat(ParameterPanel.this.txtBottomSensorTolerance1.getText().replace(",", "."));
-            device.getSensors().get(0).tollerance[1] = Float.parseFloat(ParameterPanel.this.txtTopSensorTolerance2.getText().replace(",", "."));
-            device.getSensors().get(1).tollerance[1] = Float.parseFloat(ParameterPanel.this.txtBottomSensorTolerance2.getText().replace(",", "."));
+            ((S7Data)device.getSensors().get(0)).scaleMin = Float.parseFloat(ParameterPanel.this.txtTopSensorMin.getText().replace(",", "."));
+            ((S7Data)device.getSensors().get(1)).scaleMin = Float.parseFloat(ParameterPanel.this.txtBottomSensorMin.getText().replace(",", "."));
+            ((S7Data)device.getSensors().get(0)).scaleMax = Float.parseFloat(ParameterPanel.this.txtTopSensorMax.getText().replace(",", "."));
+            ((S7Data)device.getSensors().get(1)).scaleMax = Float.parseFloat(ParameterPanel.this.txtBottomSensorMax.getText().replace(",", "."));
+            ((S7Data)device.getSensors().get(0)).tollerance[0] = Float.parseFloat(ParameterPanel.this.txtTopSensorTolerance1.getText().replace(",", "."));
+            ((S7Data)device.getSensors().get(1)).tollerance[0] = Float.parseFloat(ParameterPanel.this.txtBottomSensorTolerance1.getText().replace(",", "."));
+            ((S7Data)device.getSensors().get(0)).tollerance[1] = Float.parseFloat(ParameterPanel.this.txtTopSensorTolerance2.getText().replace(",", "."));
+            ((S7Data)device.getSensors().get(1)).tollerance[1] = Float.parseFloat(ParameterPanel.this.txtBottomSensorTolerance2.getText().replace(",", "."));
         } finally {
             this.setCursor(Cursor.getDefaultCursor());
-            device.sendData = true;
+            //device.sendData = true;
             dispose();
         }
     }

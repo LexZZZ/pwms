@@ -20,6 +20,10 @@
 |=============================================================================*/
 package ru.lex3.pwms.moka7;
 
+import ru.lex3.pwms.interfaces.PLC;
+import ru.lex3.pwms.interfaces.PLCConnectionParameters;
+import ru.lex3.pwms.interfaces.PLCData;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -28,12 +32,13 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
  * @author Dave Nardella
  */
-public class S7Client {
+public class S7Client implements PLC {
     // WordLength
     private static final byte S7_WL_BYTE = 0x02;
     private static final byte S7_WL_COUNTER = 0x1C;
@@ -55,9 +60,9 @@ public class S7Client {
     private static final int ERR_S7_INVALID_PARAMS = 0x000E;
 
     // Public fields
-    public boolean connected = false;
-    public int lastError = 0;
-    public int recvTimeout = 2000;
+    private boolean connected = false;
+    private int lastError = 0;
+    private int recvTimeout = 2000;
 
     // Privates
     private static final int ISO_TCP = 102; // ISO_TCP Port
@@ -74,6 +79,7 @@ public class S7Client {
     private DataOutputStream outStream = null;
 
     private String ipAddress;
+    private PLCConnectionParameters connectionParameters;
 
     private byte localTSAP_HI;
     private byte localTSAP_LO;
@@ -308,8 +314,8 @@ public class S7Client {
             (byte) 0x00
     };
 
-    public S7Client() {
-        // Placeholder for future implementations
+    public S7Client(PLCConnectionParameters connectionParameters) {
+        this.connectionParameters = connectionParameters;
     }
 
     public static String getErrorText(int error) {
@@ -504,7 +510,10 @@ public class S7Client {
     }
 
     public void setConnectionType(short connectionType) {
-        connType = connectionType;
+        if (connectionType == 0)
+            connType = S7.PG;
+        else
+            connType = connectionType;
     }
 
     public int connect() {
@@ -549,7 +558,44 @@ public class S7Client {
         return lastError;
     }
 
+    /**
+     * @param connectionParameters - parameters for establish connection
+     * @return
+     */
+    @Override
+    public void setConnectionParameters(PLCConnectionParameters connectionParameters) {
+        this.connectionParameters = connectionParameters;
+    }
+
+    @Override
+    public PLCConnectionParameters getConnectionParameters() {
+        return connectionParameters;
+    }
+
+    @Override
+    public int connectTo() {
+        return connectToPLC(connectionParameters.strings[0], connectionParameters.ints[0], connectionParameters.ints[1]);
+    }
+
+    public int connectToPLC(String address, int rack, int slot) {
+
+        int remoteTSAP = (connType << 8) + (rack * 0x20) + slot;
+
+        setConnectionParams(address, 0x0100, remoteTSAP);
+        return connect();
+
+    }
+
+    public int pduLength() {
+        return PDU_LENGTH;
+    }
+
+    @Override
     public void disconnect() {
+        disconnectFromPLC();
+    }
+
+    public void disconnectFromPLC() {
         if (connected) {
             try {
                 outStream.close();
@@ -562,16 +608,6 @@ public class S7Client {
         }
     }
 
-    public int connectTo(String address, int rack, int slot) {
-        int remoteTSAP = (connType << 8) + (rack * 0x20) + slot;
-        setConnectionParams(address, 0x0100, remoteTSAP);
-        return connect();
-    }
-
-    public int pduLength() {
-        return PDU_LENGTH;
-    }
-
     public void setConnectionParams(String address, int localTSAP, int remoteTSAP) {
         int locTSAP = localTSAP & 0x0000FFFF;
         int remTSAP = remoteTSAP & 0x0000FFFF;
@@ -582,7 +618,19 @@ public class S7Client {
         remoteTSAP_LO = (byte) (remTSAP & 0x00FF);
     }
 
+    @Override
+    public boolean isConnected() {
+        return connected;
+    }
+
+
+    @Override
+    public int readData(PLCData plcData, byte[] data) {
+        return readArea(plcData.serviceData.data[0], plcData.serviceData.data[1], plcData.serviceData.data[2], plcData.serviceData.data[3], data);
+    }
+
     public int readArea(int area, int dbNumber, int start, int amount, byte[] data) {
+
         int address;
         int numElements;
         int maxElements;
@@ -658,7 +706,13 @@ public class S7Client {
         return lastError;
     }
 
+    @Override
+    public int writeData(PLCData plcData, byte[] data) {
+        return writeArea(plcData.serviceData.data[0], plcData.serviceData.data[1], plcData.serviceData.data[2], plcData.serviceData.data[3], data);
+    }
+
     public int writeArea(int area, int dbNumber, int start, int amount, byte[] data) {
+
         int address;
         int numElements;
         int maxElements;
