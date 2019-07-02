@@ -159,11 +159,7 @@ class ConnectionPanel extends JFrame {
 
         chkAutoConnect = new JCheckBox("");
         chkAutoConnect.setSelected(device.getPlc().getConnectionParameters().isAutoConnect());
-        chkAutoConnect.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                chkAutoConnect_itemStateChanged(e);
-            }
-        });
+        chkAutoConnect.addItemListener(e -> chkAutoConnect_itemStateChanged(e));
         chkAutoConnect.setBounds(354, 10, 24, 24);
         contentPane.add(chkAutoConnect);
 
@@ -177,11 +173,7 @@ class ConnectionPanel extends JFrame {
 
         chkAsyncConnect = new JCheckBox("");
         chkAsyncConnect.setSelected(device.getPlc().getConnectionParameters().isAsyncConnect());
-        chkAsyncConnect.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                chkAsyncConnect_itemStateChanged(e);
-            }
-        });
+        chkAsyncConnect.addItemListener(e -> chkAsyncConnect_itemStateChanged(e));
 
         chkAsyncConnect.setBounds(354, 60, 24, 24);
         contentPane.add(chkAsyncConnect);
@@ -192,11 +184,7 @@ class ConnectionPanel extends JFrame {
 
         btnSaveConnectionSettings = new JButton();
         btnSaveConnectionSettings.setToolTipText("<html><center>save</center><center>settings</center></html>");
-        btnSaveConnectionSettings.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                btnSaveConnectionSettings_actionPerformed(e);
-            }
-        });
+        btnSaveConnectionSettings.addActionListener(e -> btnSaveConnectionSettings_actionPerformed(e));
         btnSaveConnectionSettings.setIcon(
                 new ImageIcon(PWMsVisu.class.getResource("/resources/btnSaveConnectionSettings.Image.png")));
         btnSaveConnectionSettings.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -206,11 +194,7 @@ class ConnectionPanel extends JFrame {
         contentPane.add(btnSaveConnectionSettings);
 
         btnConnect = new JButton();
-        btnConnect.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                btnConnect_actionPerformed(e);
-            }
-        });
+        btnConnect.addActionListener(e -> btnConnect_actionPerformed(e));
         btnConnect.setIcon(new ImageIcon(PWMsVisu.class.getResource("/resources/btnConnect.Image.png")));
         btnConnect.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnConnect.setMargin(new Insets(0, 0, 0, 0));
@@ -219,11 +203,7 @@ class ConnectionPanel extends JFrame {
         contentPane.add(btnConnect);
 
         btnDisconnect = new JButton();
-        btnDisconnect.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                btnDisconnect_actionPerformed(e);
-            }
-        });
+        btnDisconnect.addActionListener(e -> btnDisconnect_actionPerformed(e));
         btnDisconnect.setIcon(new ImageIcon(PWMsVisu.class.getResource("/resources/btnDisconnect.Image.png")));
         btnDisconnect.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnDisconnect.setMargin(new Insets(0, 0, 0, 0));
