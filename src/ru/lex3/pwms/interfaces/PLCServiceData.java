@@ -4,8 +4,8 @@ public abstract class PLCServiceData {
     public PLC plc;
     public int[] data;
 
-    public PLCServiceData(PLC plc, int[] serviceData) {
+    public PLCServiceData(PLC plc, int[] data) {
         this.plc = plc;
-        this.data = serviceData;
+        this.data = data;
     }
 }

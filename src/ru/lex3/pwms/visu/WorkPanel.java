@@ -40,7 +40,7 @@ public class WorkPanel extends JPanel implements Runnable {
     private JButton btnParameterSettings;
     private JButton btnConnectionSettings;
 
-    public WorkPanel(PWM device, String plcName, int x, int y) {
+    WorkPanel(PWM device, String plcName, int x, int y) {
         this.device = device;
         this.plcName = plcName;
 
@@ -123,11 +123,7 @@ public class WorkPanel extends JPanel implements Runnable {
         statusBar.add(lblDeviceState);
 
         btnParameterSettings = new JButton();
-        btnParameterSettings.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                btnParameterSettings_actionPerformed(e);
-            }
-        });
+        btnParameterSettings.addActionListener(e -> btnParameterSettings_actionPerformed(e));
         btnParameterSettings.setIcon(new ImageIcon(PWMsVisu.class.getResource("/resources/btnParameterSettings.Image24x24.png")));
         btnParameterSettings.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnParameterSettings.setMargin(new Insets(0, 0, 0, 0));
@@ -136,11 +132,7 @@ public class WorkPanel extends JPanel implements Runnable {
         subPanel.add(btnParameterSettings);
 
         btnConnectionSettings = new JButton();
-        btnConnectionSettings.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                btnConnectionSettings_actionPerformed(e);
-            }
-        });
+        btnConnectionSettings.addActionListener(e -> btnConnectionSettings_actionPerformed(e));
         btnConnectionSettings.setIcon(new ImageIcon(PWMsVisu.class.getResource("/resources/btnConnectionSettings.Image24x24.png")));
         btnConnectionSettings.setVerticalTextPosition(SwingConstants.BOTTOM);
         btnConnectionSettings.setMargin(new Insets(0, 0, 0, 0));
@@ -205,7 +197,7 @@ public class WorkPanel extends JPanel implements Runnable {
         grbParameterSettings.setVisible(true);
     }
 
-    public PWM getDevice() {
+    PWM getDevice() {
         return device;
     }
 
@@ -222,17 +214,13 @@ public class WorkPanel extends JPanel implements Runnable {
      */
     @Override
     public void run() {
-        new Thread(device).start();
-        System.out.println("run workPanel");
+        System.out.println(plcName + ": run workPanel");
         while (!Thread.currentThread().isInterrupted()) {
-            System.out.println("Thread workPanel");
-            txtTopCurrentMeasure.setText(String.valueOf(((S7Data)device.getSensors().get(0)).currentData));
-            txtBottomCurrentMeasure.setText(String.valueOf(((S7Data)device.getSensors().get(1)).currentData));
-            txtTopLastMeasure.setText(String.valueOf(((S7Data)device.getSensors().get(0)).lastMeasure));
-            txtBottomLastMeasure.setText(String.valueOf(((S7Data)device.getSensors().get(1)).lastMeasure));
-            System.out.println(((S7Data)device.getSensors().get(0)).lastMeasure);
-            System.out.println(((S7Data)device.getSensors().get(1)).lastMeasure);
+            txtTopCurrentMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(0)).currentData));
+            txtBottomCurrentMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(1)).currentData));
+            txtTopLastMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(0)).lastMeasure));
+            txtBottomLastMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(1)).lastMeasure));
         }
-
+        System.out.println(plcName + "Thread workPanel interrupted");
     }
 }

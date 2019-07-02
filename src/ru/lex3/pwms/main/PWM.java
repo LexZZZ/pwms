@@ -15,61 +15,34 @@ public class PWM implements Runnable {
     private PLCConnectionSettingsLoader plcSettingsLoader;
 
     private PLCConnectionSettingsSaver plcSettingsSaver;
-    private boolean sendData = false;
 
-    /**
-     * When an object implementing interface <code>Runnable</code> is used
-     * to create a thread, starting the thread causes the object's
-     * <code>run</code> method to be called in that separately executing
-     * thread.
-     * <p>
-     * The general contract of the method <code>run</code> is that it may
-     * take any action whatsoever.
-     *
-     * @see Thread#run()
-     */
-    @Override
-    public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
-            if (plc.isConnected()) {
-
-                // System.out.println(cpuInfo.asName() + ": geting a data");
-                System.out.println(": geting a data");
-                for (PLCData plcData : sensors) {
+    public boolean read() {
+        if (plc.isConnected()) {
+            synchronized (this) {
+                for (PLCData plcData : sensors)
                     dataPerformer.readDataFromPLC(plcData);
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(100);
-                    } catch (InterruptedException e) {
-                        System.out.println("Class PWM, method run()");
-                        e.printStackTrace();
-                    }
-                    if (sendData)
-                        dataPerformer.writeDataToPLC(plcData);
-                }
-            } else {
-                if (sendData)
-                    sendData = false;
-                if (plc.getConnectionParameters().isAutoConnect()) {
-                    //   System.out.println(cpuInfo.asName() + ": autoconnect");
-                    System.out.println(": autoconnect");
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(plc.getConnectionParameters().getIdleTimeUntilConnect());
-                    } catch (InterruptedException e) {
-                        System.out.println("Class PWM, method run()");
-                        e.printStackTrace();
-                    }
-                    plc.connectTo();
-                }
             }
+            return true;
+        } else
+            return false;
+    }
 
+    public boolean write() {
+        if (plc.isConnected()) {
+            synchronized (this) {
+                for (PLCData plcData : sensors)
+                    dataPerformer.writeDataToPLC(plcData);
+            }
+            return true;
+        } else
+            return false;
+    }
+
+    public boolean connect() {
+        synchronized (this) {
+            return plc.connectTo() == 0;
         }
-
     }
 
     public ArrayList<PLCData> getSensors() {
@@ -92,4 +65,35 @@ public class PWM implements Runnable {
         this.dataPerformer = dataPerformer;
     }
 
+    /**
+     * When an object implementing interface <code>Runnable</code> is used
+     * to create a thread, starting the thread causes the object's
+     * <code>run</code> method to be called in that separately executing
+     * thread.
+     * <p>
+     * The general contract of the method <code>run</code> is that it may
+     * take any action whatsoever.
+     *
+     * @see Thread#run()
+     */
+    @Override
+    public void run() {
+        if (!Thread.currentThread().isInterrupted()) {
+            if (!plc.isConnected() && plc.getConnectionParameters().isAutoConnect())
+                if (!connect()) {
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(plc.getConnectionParameters().getIdleTimeUntilConnect());
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            if (plc.isConnected())
+                if (read())
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+        }
+    }
 }

@@ -32,6 +32,8 @@ public class PWMsVisu extends JFrame {
     private JButton btnEditConnectionSettings;
     private JButton btnClose;
 
+    public static ExecutorService executor;
+
     /**
      * Launch the application.
      */
@@ -103,11 +105,7 @@ public class PWMsVisu extends JFrame {
 
 
         btnEditConnectionSettings = new JButton();
-        btnEditConnectionSettings.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                btnEditConnectionSettings_actionPerformed(e);
-            }
-        });
+        btnEditConnectionSettings.addActionListener(e -> btnEditConnectionSettings_actionPerformed(e));
 
         btnEditConnectionSettings.setIcon(
                 new ImageIcon(PWMsVisu.class.getResource("/resources/btnEditConnectionSettings.Image.png")));
@@ -121,21 +119,13 @@ public class PWMsVisu extends JFrame {
         lblLanguage.setBounds(42, 741, 60, 20);
         contentPane.add(lblLanguage);
 
-        cmbLanguage = new JComboBox<Locale>();
-        cmbLanguage.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                cmbLanguage_itemStateChanged(e);
-            }
-        });
+        cmbLanguage = new JComboBox<>();
+        cmbLanguage.addItemListener(e -> cmbLanguage_itemStateChanged(e));
         cmbLanguage.setBounds(102, 741, 91, 20);
         contentPane.add(cmbLanguage);
 
         btnClose = new JButton("<html><center>close</center></html>");
-        btnClose.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                btnClose_actionPerformed(e);
-            }
-        });
+        btnClose.addActionListener(e -> btnClose_actionPerformed(e));
 
         btnClose.setIcon(new ImageIcon(PWMsVisu.class.getResource("/resources/btnClose.Image.png")));
         btnClose.setVerticalTextPosition(SwingConstants.BOTTOM);
@@ -159,7 +149,7 @@ public class PWMsVisu extends JFrame {
 
             sensors = new ArrayList<>();
             for (int j = 0; j < 2; j++) {
-                plcData = new S7Data(new S7ServiceData(plc, new int[]{S7.S7_AREA_DB, 4, j * 42, 42}));
+                plcData = new S7Data(new S7ServiceData(plc, new int[]{S7.S7_AREA_DB, 4, j * 42, 42, (j * 42) + 12, 28}));
                 sensors.add(plcData);
             }
 
@@ -177,10 +167,10 @@ public class PWMsVisu extends JFrame {
                 y = y + 115;
             }
         }
-        ExecutorService executor = Executors.newCachedThreadPool();
+        executor = Executors.newCachedThreadPool();
         for (WorkPanel workPanel : workPanels) {
             add(workPanel);
-            executor.execute(workPanel);
+            executor.execute(workPanel.getDevice());
         }
     }
 
@@ -192,11 +182,11 @@ public class PWMsVisu extends JFrame {
 
         // set language combobox
         Locale[] allLocale = new Locale[2];
-        if (Locale.getDefault().getLanguage().toString().toLowerCase() == "ru") {
+        if (Locale.getDefault().getLanguage().toLowerCase().equals("ru")) {
             allLocale[0] = Locale.getDefault();
             allLocale[1] = new Locale("en", "US");
 
-        } else if (Locale.getDefault().getLanguage().toString().toLowerCase() == "en") {
+        } else if (Locale.getDefault().getLanguage().toLowerCase().equals("en")) {
             allLocale[0] = Locale.getDefault();
             allLocale[1] = new Locale("ru", "RU");
 
@@ -204,7 +194,7 @@ public class PWMsVisu extends JFrame {
             allLocale[0] = new Locale("en", "US");
             allLocale[1] = new Locale("ru", "RU");
         }
-        cmbLanguage.setModel(new DefaultComboBoxModel<Locale>(allLocale));
+        cmbLanguage.setModel(new DefaultComboBoxModel<>(allLocale));
 
         // set UI language
         try {
@@ -235,7 +225,7 @@ public class PWMsVisu extends JFrame {
                 if (workPanel.getDevice().getPlc() != null) {
                     // unload and dispose all objects
                     workPanel.getDevice().getPlc().disconnect();
-                   // workPanel.getDevice().getPlc() = null;
+                    // workPanel.getDevice().getPlc() = null;
                 }
             }
 
@@ -336,7 +326,6 @@ public class PWMsVisu extends JFrame {
             if (CountOpenDialogs > 0) {
                 JOptionPane.showMessageDialog(this, resources.getString("to_many_windows"), "",
                         JOptionPane.INFORMATION_MESSAGE);
-                return;
             }
             //Device.disconnect();
 
