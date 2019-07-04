@@ -17,32 +17,26 @@ public class PWM implements Runnable {
     private PLCConnectionSettingsSaver plcSettingsSaver;
 
 
-    public boolean read() {
+    public synchronized boolean read() {
         if (plc.isConnected()) {
-            synchronized (this) {
-                for (PLCData plcData : sensors)
-                    dataPerformer.readDataFromPLC(plcData);
-            }
+            for (PLCData plcData : sensors)
+                dataPerformer.readDataFromPLC(plcData);
             return true;
         } else
             return false;
     }
 
-    public boolean write() {
+    public synchronized boolean write() {
         if (plc.isConnected()) {
-            synchronized (this) {
-                for (PLCData plcData : sensors)
-                    dataPerformer.writeDataToPLC(plcData);
-            }
+            for (PLCData plcData : sensors)
+                dataPerformer.writeDataToPLC(plcData);
             return true;
         } else
             return false;
     }
 
-    public boolean connect() {
-        synchronized (this) {
-            return plc.connectTo() == 0;
-        }
+    public synchronized boolean connect() {
+        return plc.connectTo() == 0;
     }
 
     public ArrayList<PLCData> getSensors() {
@@ -78,22 +72,27 @@ public class PWM implements Runnable {
      */
     @Override
     public void run() {
-        if (!Thread.currentThread().isInterrupted()) {
-            if (!plc.isConnected() && plc.getConnectionParameters().isAutoConnect())
-                if (!connect()) {
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(plc.getConnectionParameters().getIdleTimeUntilConnect());
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+        while (true) {
+            if (!Thread.currentThread().isInterrupted()) {
+                if (!plc.isConnected() && plc.getConnectionParameters().isAutoConnect()) {
+                    if (!connect()) {
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(plc.getConnectionParameters().getIdleTimeUntilConnect());
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
+                    System.out.println("Trying to connect");
                 }
-            if (plc.isConnected())
-                if (read())
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+
+                if (plc.isConnected())
+                    if (read())
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+            }
         }
     }
 }

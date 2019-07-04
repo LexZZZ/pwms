@@ -220,7 +220,15 @@ public class WorkPanel extends JPanel implements Runnable {
             txtBottomCurrentMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(1)).currentData));
             txtTopLastMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(0)).lastMeasure));
             txtBottomLastMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(1)).lastMeasure));
-        }
+            if (device.getPlc().isConnected()) {
+                lblDeviceState.setText("Connected");
+                lblDeviceState.setBackground(Color.GREEN);
+            }
+            else {
+                lblDeviceState.setText("Disconnected");
+                lblDeviceState.setBackground(Color.RED);
+            }
+            }
         System.out.println(plcName + "Thread workPanel interrupted");
     }
 }

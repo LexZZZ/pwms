@@ -10,6 +10,7 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Properties;
@@ -32,23 +33,16 @@ public class PWMsVisu extends JFrame {
     private JButton btnEditConnectionSettings;
     private JButton btnClose;
 
-    public static ExecutorService executor;
+    public static ExecutorService executor = Executors.newCachedThreadPool();
 
     /**
      * Launch the application.
      */
     public static void main(String[] args) {
-
-        EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    PWMsVisu frame = new PWMsVisu();
-                    frame.setVisible(true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        PWMsVisu frame = new PWMsVisu();
+        frame.setVisible(true);
+        for (WorkPanel workPanel : frame.workPanels)
+            SwingUtilities.invokeLater(workPanel);
     }
 
     /**
@@ -134,6 +128,7 @@ public class PWMsVisu extends JFrame {
         btnClose.setBounds(1122, 704, 68, 68);
         contentPane.add(btnClose);
         contentPane.setBackground(new Color(84, 84, 84));
+        setVisible(true);
 
         workPanels = new ArrayList<>();
         int x = 0, y = 0;
@@ -167,10 +162,9 @@ public class PWMsVisu extends JFrame {
                 y = y + 115;
             }
         }
-        executor = Executors.newCachedThreadPool();
         for (WorkPanel workPanel : workPanels) {
             add(workPanel);
-            executor.execute(workPanel.getDevice());
+
         }
     }
 
