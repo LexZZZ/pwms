@@ -20,11 +20,11 @@ public class S7Data extends PLCData {
         bits = new boolean[32];
         ints = new int[8];
         floats = new float[12];
-        init();
+        initValues();
     }
 
     @Override
-    public void init() {
+    public void initValues() {
         errMeasure = bits[0];
         teaching = bits[1];
 
@@ -39,6 +39,18 @@ public class S7Data extends PLCData {
         tollerance[3] = floats[6];
         scaleMin = floats[7];
         scaleMax = floats[8];
+    }
+
+    @Override
+    public void initBuffer() {
+        ints[0] = timeDelayScore;
+
+        floats[3] = tollerance[0];
+        floats[4] = tollerance[1];
+        floats[5] = tollerance[2];
+        floats[6] = tollerance[3];
+        floats[7] = scaleMin;
+        floats[8] = scaleMax;
     }
 
     @Override

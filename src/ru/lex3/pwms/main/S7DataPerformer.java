@@ -12,7 +12,7 @@ public class S7DataPerformer implements PLCDataPerformer {
         //plcData.serviceData.plc.readData(S7.S7_AREA_DB, plcData.serviceData.data[0], plcData.serviceData.data[1], 41, buffer);
         plcData.serviceData.plc.readData(plcData, buffer);
         convertByteToData(plcData, buffer);
-        plcData.init();
+        plcData.initValues();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class S7DataPerformer implements PLCDataPerformer {
 
     private byte[] convertDataToByte(PLCData plcData) {
         byte[] buffer = new byte[28];
-        S7.setDIntAt(buffer, 0, plcData.dints[0]);
+        S7.setDIntAt(buffer, 0, plcData.ints[0]);
         S7.setFloatAt(buffer, 4, plcData.floats[3]);
         S7.setFloatAt(buffer, 8, plcData.floats[4]);
         S7.setFloatAt(buffer, 12, plcData.floats[5]);

@@ -226,7 +226,7 @@ public class PWMsVisu extends JFrame {
 
     private void setLanguage(Locale locale) {
         // set UI-Controls with actual Locale information
-        // init ResourceManager
+        // initValues ResourceManager
 
         // set thread locale
         Locale.setDefault(locale);

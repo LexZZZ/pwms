@@ -7,7 +7,8 @@ public abstract class PLCData{
     public int[] ints;
     public int[] dints;
     public float[] floats;
-    public abstract void init();
+    public abstract void initValues();
+    public abstract void initBuffer();
 
     public PLCData(PLCServiceData serviceData) {
         setPlcServiceData(serviceData);

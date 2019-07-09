@@ -30,11 +30,14 @@ public class PWM implements Runnable {
     }
 
     public synchronized boolean write() {
+        System.out.println("Write begin");
         if (plc.isConnected()) {
             for (PLCData plcData : sensors)
                 dataPerformer.writeDataToPLC(plcData);
+            System.out.println("Write end");
             return true;
         } else
+            System.out.println("Write end");
             return false;
     }
 
