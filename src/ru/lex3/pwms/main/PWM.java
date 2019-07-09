@@ -3,6 +3,7 @@ package ru.lex3.pwms.main;
 import ru.lex3.pwms.interfaces.*;
 import ru.lex3.pwms.moka7.S7Client;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +17,8 @@ public class PWM implements Runnable {
 
     private PLCConnectionSettingsSaver plcSettingsSaver;
 
+    private UICallback uiCallback;
+    private int timeout = 50;
 
     public synchronized boolean read() {
         if (plc.isConnected()) {
@@ -59,6 +62,18 @@ public class PWM implements Runnable {
         this.dataPerformer = dataPerformer;
     }
 
+    public void setUICallback(UICallback uiCallback){
+        this.uiCallback = uiCallback;
+    }
+
+    private void waitBeforeRepeat(int timeout) {
+        try {
+            TimeUnit.MILLISECONDS.sleep(timeout);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * When an object implementing interface <code>Runnable</code> is used
      * to create a thread, starting the thread causes the object's
@@ -72,27 +87,22 @@ public class PWM implements Runnable {
      */
     @Override
     public void run() {
-        while (true) {
-            if (!Thread.currentThread().isInterrupted()) {
-                if (!plc.isConnected() && plc.getConnectionParameters().isAutoConnect()) {
+        System.out.println("EDT? " + SwingUtilities.isEventDispatchThread());
+        System.out.println(plc + " started");
+        while (!Thread.currentThread().isInterrupted()) {
+            while (!plc.isConnected()) {
+                if (plc.getConnectionParameters().isAutoConnect()) {
+                    System.out.println("Connect to PLC: ");
                     if (!connect()) {
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(plc.getConnectionParameters().getIdleTimeUntilConnect());
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                        waitBeforeRepeat((int) plc.getConnectionParameters().getIdleTimeUntilConnect());
                     }
-                    System.out.println("Trying to connect");
-                }
-
-                if (plc.isConnected())
-                    if (read())
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(100);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                } else
+                    waitBeforeRepeat(timeout);
             }
+            read();
+            uiCallback.refreshValues();
+            waitBeforeRepeat(timeout);
         }
     }
 }
+

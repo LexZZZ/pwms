@@ -42,7 +42,8 @@ public class PWMsVisu extends JFrame {
         PWMsVisu frame = new PWMsVisu();
         frame.setVisible(true);
         for (WorkPanel workPanel : frame.workPanels)
-            SwingUtilities.invokeLater(workPanel);
+            executor.execute(workPanel.getDevice());
+        //    SwingUtilities.invokeLater(workPanel);
     }
 
     /**
@@ -84,19 +85,16 @@ public class PWMsVisu extends JFrame {
             public void windowOpened(WindowEvent arg0) {
                 formWindowOpened(arg0);
             }
-
             @Override
             public void windowClosing(WindowEvent e) {
                 formWindowClosing(e);
             }
-
         });
 
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(null);
-
 
         btnEditConnectionSettings = new JButton();
         btnEditConnectionSettings.addActionListener(e -> btnEditConnectionSettings_actionPerformed(e));
@@ -128,7 +126,6 @@ public class PWMsVisu extends JFrame {
         btnClose.setBounds(1122, 704, 68, 68);
         contentPane.add(btnClose);
         contentPane.setBackground(new Color(84, 84, 84));
-        setVisible(true);
 
         workPanels = new ArrayList<>();
         int x = 0, y = 0;
@@ -164,7 +161,6 @@ public class PWMsVisu extends JFrame {
         }
         for (WorkPanel workPanel : workPanels) {
             add(workPanel);
-
         }
     }
 
@@ -200,7 +196,6 @@ public class PWMsVisu extends JFrame {
             JOptionPane.showMessageDialog(this, ex.getClass().getName() + " " + ex.getMessage(), "",
                     JOptionPane.ERROR_MESSAGE);
         }
-
         loadSettingsFromFile();
     }
 
@@ -229,7 +224,6 @@ public class PWMsVisu extends JFrame {
         }
     }
 
-
     private void setLanguage(Locale locale) {
         // set UI-Controls with actual Locale information
         // init ResourceManager
@@ -244,8 +238,6 @@ public class PWMsVisu extends JFrame {
         this.lblLanguage.setText(resources.getString("lblLanguage_Text"));
         this.btnClose.setText(resources.getString("btnClose_Text"));
         this.btnEditConnectionSettings.setToolTipText(resources.getString("btnEditConnectionSettings_Text"));
-
-
     }
 
     private void cmbLanguage_itemStateChanged(ItemEvent e) {
@@ -311,9 +303,7 @@ public class PWMsVisu extends JFrame {
             //  panAccess.setEnabled(chkAutoConnect.isSelected());
             setCursor(Cursor.getDefaultCursor());
         }
-
     }
-
 
     private void btnEditConnectionSettings_actionPerformed(ActionEvent e) {
         try {
@@ -328,6 +318,4 @@ public class PWMsVisu extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
-
-
 }

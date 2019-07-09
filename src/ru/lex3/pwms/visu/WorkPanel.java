@@ -1,5 +1,6 @@
 package ru.lex3.pwms.visu;
 
+import ru.lex3.pwms.interfaces.UICallback;
 import ru.lex3.pwms.main.PWM;
 import ru.lex3.pwms.main.S7Data;
 import ru.lex3.pwms.moka7.S7Client;
@@ -13,8 +14,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.concurrent.TimeUnit;
 
-public class WorkPanel extends JPanel implements Runnable {
+public class WorkPanel extends JPanel implements UICallback {
 
     private PWM device;
     private String plcName;
@@ -42,6 +44,7 @@ public class WorkPanel extends JPanel implements Runnable {
 
     WorkPanel(PWM device, String plcName, int x, int y) {
         this.device = device;
+        this.device.setUICallback(this);
         this.plcName = plcName;
 
         setBounds(x, y, 255, 113);
@@ -201,34 +204,23 @@ public class WorkPanel extends JPanel implements Runnable {
         return device;
     }
 
-    /**
-     * When an object implementing interface <code>Runnable</code> is used
-     * to create a thread, starting the thread causes the object's
-     * <code>run</code> method to be called in that separately executing
-     * thread.
-     * <p>
-     * The general contract of the method <code>run</code> is that it may
-     * take any action whatsoever.
-     *
-     * @see Thread#run()
-     */
     @Override
-    public void run() {
-        System.out.println(plcName + ": run workPanel");
-        while (!Thread.currentThread().isInterrupted()) {
+    public void refreshValues() {
+        System.out.println("EDT? :" + SwingUtilities.isEventDispatchThread());
+        if (device.getPlc().isConnected()) {
             txtTopCurrentMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(0)).currentData));
             txtBottomCurrentMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(1)).currentData));
             txtTopLastMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(0)).lastMeasure));
             txtBottomLastMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(1)).lastMeasure));
-            if (device.getPlc().isConnected()) {
-                lblDeviceState.setText("Connected");
-                lblDeviceState.setBackground(Color.GREEN);
-            }
-            else {
-                lblDeviceState.setText("Disconnected");
-                lblDeviceState.setBackground(Color.RED);
-            }
-            }
-        System.out.println(plcName + "Thread workPanel interrupted");
+            lblDeviceState.setText("Connected");
+            lblDeviceState.setBackground(Color.GREEN);
+        } else {
+            txtTopCurrentMeasure.setText("");
+            txtBottomCurrentMeasure.setText("");
+            txtTopLastMeasure.setText("");
+            txtBottomLastMeasure.setText("");
+            lblDeviceState.setText("Disconnected");
+            lblDeviceState.setBackground(Color.RED);
+        }
     }
 }
