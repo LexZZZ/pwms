@@ -136,7 +136,7 @@ public class PWMsVisu extends JFrame {
         PLCDataPerformer plcDataPerformer;
 
         for (int i = 0; i < 20; i++) {
-            pwm = new PWM();
+            pwm = new PWM("A" + i);
             plc = new S7Client(new S7ConnectionParameters(new String[]{}, new int[]{}, new boolean[]{}));
 
             sensors = new ArrayList<>();
@@ -151,7 +151,7 @@ public class PWMsVisu extends JFrame {
             pwm.setDataPerformer(plcDataPerformer);
             pwm.setSensors(sensors);
 
-            workPanels.add(new WorkPanel(pwm, "A" + i, x, y));
+            workPanels.add(new WorkPanel(pwm, x, y));
             if (y + 113 > 680) {
                 x = x + 257;
                 y = 0;

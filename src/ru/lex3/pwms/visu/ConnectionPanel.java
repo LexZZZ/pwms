@@ -16,6 +16,9 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.MaskFormatter;
 import javax.swing.text.NumberFormatter;
 
+import jmri.util.swing.*;
+
+
 class ConnectionPanel extends JFrame {
 
     private PWM device;
@@ -126,11 +129,10 @@ class ConnectionPanel extends JFrame {
         txtAdress2.addFocusListener(new FocusSelect());
         contentPane.add(txtAdress2);*/
 
-
         txtAdress3 = new JFormattedTextField(new NumberFormatterInt(99).getFormatter());
         txtAdress3.setFocusLostBehavior(JFormattedTextField.COMMIT);
         txtAdress3.setColumns(10);
-        txtAdress3.setText(Integer.toString(((S7ConnectionParameters)device.getPlc().getConnectionParameters()).getRack()));
+        txtAdress3.setText(Integer.toString(((S7ConnectionParameters) device.getPlc().getConnectionParameters()).getRack()));
         //txtAdress3.setBounds(145, 87, 90, 20);
         txtAdress3.setBounds(145, 37, 90, 20);
         txtAdress3.addFocusListener(new FocusSelect());
@@ -139,7 +141,7 @@ class ConnectionPanel extends JFrame {
         txtAdress4 = new JFormattedTextField(new NumberFormatterInt(99).getFormatter());
         txtAdress4.setFocusLostBehavior(JFormattedTextField.COMMIT);
         txtAdress4.setColumns(10);
-        txtAdress4.setText(Integer.toString(((S7ConnectionParameters)device.getPlc().getConnectionParameters()).getSlot()));
+        txtAdress4.setText(Integer.toString(((S7ConnectionParameters) device.getPlc().getConnectionParameters()).getSlot()));
         txtAdress4.setBounds(145, 62, 90, 20);
         //txtAdress4.setBounds(145, 112, 90, 20);
         txtAdress4.addFocusListener(new FocusSelect());
@@ -169,6 +171,7 @@ class ConnectionPanel extends JFrame {
         txtIdleTimeSpan.setText(Long.toString(device.getPlc().getConnectionParameters().getIdleTimeUntilConnect()));
         txtIdleTimeSpan.setBounds(354, 37, 36, 20);
         txtIdleTimeSpan.addFocusListener(new FocusSelect());
+        txtIdleTimeSpan.setEnabled(chkAutoConnect.isSelected());
         contentPane.add(txtIdleTimeSpan);
 
         chkAsyncConnect = new JCheckBox("");
@@ -219,20 +222,14 @@ class ConnectionPanel extends JFrame {
 
     private void btnConnect_actionPerformed(ActionEvent e) {
 
-        // Example asynchronous/ synchronous Connect
-        if (chkAsyncConnect.isSelected()) {
+        device.getPlc().connectTo();
+       /* if (chkAsyncConnect.isSelected()) {
             // asynchronous call
             device.getPlc().connectTo();
         } else {
             // synchronous call (standard)
-            /*ConnectResult res = Device.connect();
-            if (!res.Quality().equals(OperationResult.eQuality.GOOD)) {
-                JOptionPane.showMessageDialog(null,
-                        resources.getString("connect_unsuccessful") + System.getProperty("line.separator")
-                                + resources.getString("MessageText") + res.Message(),
-                        "", JOptionPane.ERROR_MESSAGE);
-				}*/
-        }
+
+        }*/
     }
 
     private void setDevice(PWM device) {
@@ -301,12 +298,13 @@ class ConnectionPanel extends JFrame {
         MaskFormatter formatter = null;
         try {
             formatter = new MaskFormatter(s);
+            formatter.setPlaceholder("192.168.000.000");
         } catch (java.text.ParseException exc) {
-            System.err.println("formatter is bad: " + exc.getMessage());
-            System.exit(-1);
+            System.err.println("IP address formatter is bad: " + exc.getMessage());
         }
         return formatter;
     }
+
 
 
     void setLanguage() {
@@ -324,7 +322,6 @@ class ConnectionPanel extends JFrame {
         btnConnect.setToolTipText(PWMsVisu.resources.getString("btnConnect_Text"));
         btnDisconnect.setToolTipText(PWMsVisu.resources.getString("btnDisconnect_Text"));
         btnSaveConnectionSettings.setToolTipText(PWMsVisu.resources.getString("btnSaveConnectionSettings_Text"));
-
     }
 
     /**
@@ -367,10 +364,10 @@ class ConnectionPanel extends JFrame {
          */
         @Override
         public void focusLost(FocusEvent e) {
-            device.getPlc().getConnectionParameters().setIpAddress(ConnectionPanel.this.txtAdress0.getText().replaceAll(" ", ""));
+            device.getPlc().getConnectionParameters().setIpAddress(ConnectionPanel.this.txtAdress0.getText().replaceAll(" ", "0"));
             //device.setIpAddress(ConnectionPanel.this.txtAdress1.getText());
-            ((S7ConnectionParameters)device.getPlc().getConnectionParameters()).setRack(Integer.parseInt(ConnectionPanel.this.txtAdress3.getText()));
-            ((S7ConnectionParameters)device.getPlc().getConnectionParameters()).setSlot(Integer.parseInt(ConnectionPanel.this.txtAdress4.getText()));
+            ((S7ConnectionParameters) device.getPlc().getConnectionParameters()).setRack(Integer.parseInt(ConnectionPanel.this.txtAdress3.getText()));
+            ((S7ConnectionParameters) device.getPlc().getConnectionParameters()).setSlot(Integer.parseInt(ConnectionPanel.this.txtAdress4.getText()));
             device.getPlc().getConnectionParameters().setIdleTimeUntilConnect(Integer.parseInt((ConnectionPanel.this.txtIdleTimeSpan.getText())));
         }
     }

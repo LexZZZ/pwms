@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 public class WorkPanel extends JPanel implements UICallback {
 
     private PWM device;
-    private String plcName;
     private static ConnectionPanel grbConnectionSettings;
     private static ParameterPanel grbParameterSettings;
     private DisabledJPanel disabledMainPanel;
@@ -42,10 +41,9 @@ public class WorkPanel extends JPanel implements UICallback {
     private JButton btnParameterSettings;
     private JButton btnConnectionSettings;
 
-    WorkPanel(PWM device, String plcName, int x, int y) {
+    WorkPanel(PWM device, int x, int y) {
         this.device = device;
         this.device.setUICallback(this);
-        this.plcName = plcName;
 
         setBounds(x, y, 255, 113);
         setLayout(null);
@@ -54,7 +52,7 @@ public class WorkPanel extends JPanel implements UICallback {
         subPanel = new JPanel();
         subPanel.setBounds(0, 0, getWidth(), getHeight());
         subPanel.setLayout(null);
-        subPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), plcName, TitledBorder.LEADING, TitledBorder.TOP,
+        subPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), device.getPlcName(), TitledBorder.LEADING, TitledBorder.TOP,
                 null, new Color(0, 0, 0)));
         add(subPanel);
 
@@ -148,7 +146,7 @@ public class WorkPanel extends JPanel implements UICallback {
 
     private void btnConnectionSettings_actionPerformed(ActionEvent e) {
         grbConnectionSettings = new ConnectionPanel(device);
-        grbConnectionSettings.setTitle("Connection settings " + plcName);
+        grbConnectionSettings.setTitle("Connection settings " + device.getPlcName());
         grbConnectionSettings.addWindowListener(new WindowAdapter() {
             /**
              * Invoked when a window has been opened.
@@ -175,7 +173,7 @@ public class WorkPanel extends JPanel implements UICallback {
 
     private void btnParameterSettings_actionPerformed(ActionEvent e) {
         grbParameterSettings = new ParameterPanel(device);
-        grbParameterSettings.setTitle("Parameter settings " + plcName);
+        grbParameterSettings.setTitle("Parameter settings " + device.getPlcName());
         grbParameterSettings.addWindowListener(new WindowAdapter() {
             /**
              * Invoked when a window has been opened.
@@ -206,21 +204,21 @@ public class WorkPanel extends JPanel implements UICallback {
 
     @Override
     public void refreshValues() {
-        System.out.println("EDT? :" + SwingUtilities.isEventDispatchThread());
+        //System.out.println("EDT? :" + SwingUtilities.isEventDispatchThread());
         if (device.getPlc().isConnected()) {
             txtTopCurrentMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(0)).currentData));
             txtBottomCurrentMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(1)).currentData));
             txtTopLastMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(0)).lastMeasure));
             txtBottomLastMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(1)).lastMeasure));
-            lblDeviceState.setText("Connected");
-            lblDeviceState.setBackground(Color.GREEN);
+            lblDeviceState.setText("Connected to " + device.getPlc().getConnectionParameters().getIpAddres());
+            lblDeviceState.setBackground(new Color(0,255,0));
         } else {
             txtTopCurrentMeasure.setText("");
             txtBottomCurrentMeasure.setText("");
             txtTopLastMeasure.setText("");
             txtBottomLastMeasure.setText("");
             lblDeviceState.setText("Disconnected");
-            lblDeviceState.setBackground(Color.RED);
+            lblDeviceState.setBackground(new Color(255,0,0));
         }
     }
 }

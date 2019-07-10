@@ -5,7 +5,6 @@ public abstract class PLCData{
 
     public boolean[] bits;
     public int[] ints;
-    public int[] dints;
     public float[] floats;
     public abstract void initValues();
     public abstract void initBuffer();

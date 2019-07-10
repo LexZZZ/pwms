@@ -10,15 +10,21 @@ import java.util.concurrent.TimeUnit;
 public class PWM implements Runnable {
     private PLC plc;
 
-    private ArrayList<PLCData> sensors;
-    private PLCDataPerformer dataPerformer;
+    private String plcName;
 
+    private ArrayList<PLCData> sensors;
+
+    private PLCDataPerformer dataPerformer;
     private PLCConnectionSettingsLoader plcSettingsLoader;
 
     private PLCConnectionSettingsSaver plcSettingsSaver;
 
     private UICallback uiCallback;
+
     private int timeout = 50;
+    public PWM(String plcName) {
+        this.plcName = plcName;
+    }
 
     public synchronized boolean read() {
         if (plc.isConnected()) {
@@ -61,6 +67,10 @@ public class PWM implements Runnable {
         this.plc = plc;
     }
 
+    public String getPlcName() {
+        return plcName;
+    }
+
     public void setDataPerformer(PLCDataPerformer dataPerformer) {
         this.dataPerformer = dataPerformer;
     }
@@ -90,12 +100,12 @@ public class PWM implements Runnable {
      */
     @Override
     public void run() {
-        System.out.println("EDT? " + SwingUtilities.isEventDispatchThread());
-        System.out.println(plc + " started");
+        //System.out.println("EDT? " + SwingUtilities.isEventDispatchThread());
+        System.out.println("Mashine " + getPlcName() + " was started");
         while (!Thread.currentThread().isInterrupted()) {
             while (!plc.isConnected()) {
                 if (plc.getConnectionParameters().isAutoConnect()) {
-                    System.out.println("Connect to PLC: ");
+                    System.out.println("Connect to PLC: " + getPlcName());
                     if (!connect()) {
                         waitBeforeRepeat((int) plc.getConnectionParameters().getIdleTimeUntilConnect());
                     }

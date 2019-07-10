@@ -9,7 +9,6 @@ public class S7DataPerformer implements PLCDataPerformer {
     @Override
     public void readDataFromPLC(PLCData plcData) {
         byte[] buffer = new byte[128];
-        //plcData.serviceData.plc.readData(S7.S7_AREA_DB, plcData.serviceData.data[0], plcData.serviceData.data[1], 41, buffer);
         plcData.serviceData.plc.readData(plcData, buffer);
         convertByteToData(plcData, buffer);
         plcData.initValues();
@@ -17,13 +16,12 @@ public class S7DataPerformer implements PLCDataPerformer {
 
     @Override
     public void writeDataToPLC(PLCData plcData) {
+        plcData.initBuffer();
         byte[] buffer = convertDataToByte(plcData);
-        //plcData.serviceData.plc.writeData(S7.S7_AREA_DB, plcData.serviceData.data[0], plcData.serviceData.data[1], plcData.serviceData.data[2], buffer);
         plcData.serviceData.plc.writeData(plcData, buffer);
     }
 
     private void convertByteToData(PLCData plcData, byte[] buffer) {
-        //  plc.readArea(S7.S7_AREA_DB, sensor.dbNr, sensor.startRead, 41, buffer);
         plcData.floats[0] = S7.getFloatAt(buffer, 0);
         plcData.floats[1] = S7.getFloatAt(buffer, 4);
         plcData.floats[2] = S7.getFloatAt(buffer, 8);
@@ -36,13 +34,6 @@ public class S7DataPerformer implements PLCDataPerformer {
         plcData.floats[8] = S7.getFloatAt(buffer, 36);
         plcData.bits[0] = S7.getBitAt(buffer, 40, 0);
         plcData.bits[1] = S7.getBitAt(buffer, 40, 1);
-
-     /*   System.out.println("Cur data: " + s7Data.currentData);
-        System.out.println("CalVal: " + s7Data.calibratedValue);
-        System.out.println("Last measure: " + s7Data.lastMeasure);
-        System.out.println("TON: " + s7Data.timeDelayScore);
-        System.out.println("Scale min: " + s7Data.scaleMin);
-        System.out.println("Scale max: " + s7Data.scaleMax);*/
     }
 
     private byte[] convertDataToByte(PLCData plcData) {

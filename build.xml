@@ -32,13 +32,11 @@
     <!-- Target - compiles sources -->
     <target name="compile" depends="prepare" description="Compiles all sources">
         <echo message="Compiling sources..."/>
-        <javac srcdir="${src.dir}" destdir="${classes.dir}">
-			<!--	
-			<classpath>
-                <pathelement path="${lib.dir}/ccis.jar"/>
-            </classpath>
-			-->
-		</javac>
+			<javac srcdir="${src.dir}" destdir="${classes.dir}">
+					<classpath>
+						<pathelement path="${lib.dir}/jmri.jar"/>
+            		</classpath>
+			</javac>
     </target>
     
     <!-- Target - Runs application -->
@@ -49,6 +47,7 @@
             <classpath>
                 <pathelement path="${classes.dir}"/>
       			<pathelement path="${lib.dir}/"/>
+      			<pathelement path="${lib.dir}/jmri.jar"/>
 	        </classpath>
 			<!--
             <jvmarg value="-Xmx128M"/>
