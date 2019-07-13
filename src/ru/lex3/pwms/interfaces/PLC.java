@@ -26,5 +26,5 @@ public interface PLC {
 
     public void setConnectionParameters(PLCConnectionParameters connectionParameters);
 
-   public PLCConnectionParameters getConnectionParameters();
+    public PLCConnectionParameters getConnectionParameters();
 }

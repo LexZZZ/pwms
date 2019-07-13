@@ -181,13 +181,6 @@ class ParameterPanel extends JFrame {
         setDevice(device);
         setLanguage();
         setAlwaysOnTop(true);
-        for (PLCData s7Data : device.getSensors()) {
-            System.out.println("DB: " + ((S7ServiceData)((S7Data) s7Data).serviceData).getDB());
-            System.out.println("startRead byte: " + ((S7ServiceData)((S7Data) s7Data).serviceData).startRead());
-            System.out.println("quantity bytes: " + ((S7ServiceData)((S7Data) s7Data).serviceData).qtyRead());
-        }
-
-
     }
 
     private void btnOk_actionPerformed(ActionEvent e) {

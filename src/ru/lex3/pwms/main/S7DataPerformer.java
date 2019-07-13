@@ -1,15 +1,17 @@
 package ru.lex3.pwms.main;
 
+import ru.lex3.pwms.interfaces.PLC;
 import ru.lex3.pwms.interfaces.PLCData;
 import ru.lex3.pwms.interfaces.PLCDataPerformer;
 import ru.lex3.pwms.moka7.S7;
 
 public class S7DataPerformer implements PLCDataPerformer {
+    private PLC plc;
 
     @Override
     public void readDataFromPLC(PLCData plcData) {
         byte[] buffer = new byte[128];
-        plcData.serviceData.plc.readData(plcData, buffer);
+        plc.readData(plcData, buffer);
         convertByteToData(plcData, buffer);
         plcData.initValues();
     }
@@ -18,7 +20,7 @@ public class S7DataPerformer implements PLCDataPerformer {
     public void writeDataToPLC(PLCData plcData) {
         plcData.initBuffer();
         byte[] buffer = convertDataToByte(plcData);
-        plcData.serviceData.plc.writeData(plcData, buffer);
+        plc.writeData(plcData, buffer);
     }
 
     private void convertByteToData(PLCData plcData, byte[] buffer) {
@@ -47,5 +49,15 @@ public class S7DataPerformer implements PLCDataPerformer {
         S7.setFloatAt(buffer, 24, plcData.floats[8]);
 
         return buffer;
+    }
+
+    @Override
+    public void setPLC(PLC plc) {
+        this.plc = plc;
+    }
+
+    @Override
+    public PLC getPLC() {
+        return plc;
     }
 }

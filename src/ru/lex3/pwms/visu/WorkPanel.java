@@ -3,7 +3,6 @@ package ru.lex3.pwms.visu;
 import ru.lex3.pwms.interfaces.UICallback;
 import ru.lex3.pwms.main.PWM;
 import ru.lex3.pwms.main.S7Data;
-import ru.lex3.pwms.moka7.S7Client;
 import ru.lex3.pwms.visu.disabledjpanel.DisabledJPanel;
 
 
@@ -11,10 +10,8 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.concurrent.TimeUnit;
 
 public class WorkPanel extends JPanel implements UICallback {
 
@@ -52,7 +49,7 @@ public class WorkPanel extends JPanel implements UICallback {
         subPanel = new JPanel();
         subPanel.setBounds(0, 0, getWidth(), getHeight());
         subPanel.setLayout(null);
-        subPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), device.getPlcName(), TitledBorder.LEADING, TitledBorder.TOP,
+        subPanel.setBorder(new TitledBorder(UIManager.getBorder("TitledBorder.border"), device.getDeviceName(), TitledBorder.LEADING, TitledBorder.TOP,
                 null, new Color(0, 0, 0)));
         add(subPanel);
 
@@ -146,7 +143,7 @@ public class WorkPanel extends JPanel implements UICallback {
 
     private void btnConnectionSettings_actionPerformed(ActionEvent e) {
         grbConnectionSettings = new ConnectionPanel(device);
-        grbConnectionSettings.setTitle("Connection settings " + device.getPlcName());
+        grbConnectionSettings.setTitle("Connection settings " + device.getDeviceName());
         grbConnectionSettings.addWindowListener(new WindowAdapter() {
             /**
              * Invoked when a window has been opened.
@@ -173,7 +170,7 @@ public class WorkPanel extends JPanel implements UICallback {
 
     private void btnParameterSettings_actionPerformed(ActionEvent e) {
         grbParameterSettings = new ParameterPanel(device);
-        grbParameterSettings.setTitle("Parameter settings " + device.getPlcName());
+        grbParameterSettings.setTitle("Parameter settings " + device.getDeviceName());
         grbParameterSettings.addWindowListener(new WindowAdapter() {
             /**
              * Invoked when a window has been opened.
@@ -210,7 +207,7 @@ public class WorkPanel extends JPanel implements UICallback {
             txtBottomCurrentMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(1)).currentData));
             txtTopLastMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(0)).lastMeasure));
             txtBottomLastMeasure.setText(String.valueOf(((S7Data) device.getSensors().get(1)).lastMeasure));
-            lblDeviceState.setText("Connected to " + device.getPlc().getConnectionParameters().getIpAddres());
+            lblDeviceState.setText("Connected to " + device.getPlc().getConnectionParameters().getAddress());
             lblDeviceState.setBackground(new Color(0,255,0));
         } else {
             txtTopCurrentMeasure.setText("");

@@ -2,7 +2,6 @@ package ru.lex3.pwms.visu;
 
 import ru.lex3.pwms.main.PWM;
 import ru.lex3.pwms.main.S7ConnectionParameters;
-import ru.lex3.pwms.moka7.*;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -11,12 +10,8 @@ import java.awt.event.*;
 import java.io.*;
 import java.text.NumberFormat;
 import java.util.Properties;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.MaskFormatter;
 import javax.swing.text.NumberFormatter;
-
-import jmri.util.swing.*;
 
 
 class ConnectionPanel extends JFrame {
@@ -105,7 +100,7 @@ class ConnectionPanel extends JFrame {
         txtAdress0.setFocusLostBehavior(JFormattedTextField.COMMIT);
         //We can't just setText on the formatted text
         //field, since its value will remain set.
-        txtAdress0.setValue(device.getPlc().getConnectionParameters().getIpAddres());
+        txtAdress0.setValue(device.getPlc().getConnectionParameters().getAddress());
         txtAdress0.setColumns(10);
         txtAdress0.setBounds(145, 12, 90, 20);
         txtAdress0.addFocusListener(new FocusSelect());
@@ -238,6 +233,7 @@ class ConnectionPanel extends JFrame {
 
     private void btnDisconnect_actionPerformed(ActionEvent e) {
         device.getPlc().disconnect();
+
     }
 
     private void btnSaveConnectionSettings_actionPerformed(ActionEvent arg) {

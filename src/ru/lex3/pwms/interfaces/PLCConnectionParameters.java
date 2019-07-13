@@ -9,9 +9,9 @@ public abstract class PLCConnectionParameters {
     public int[] ints;
     public boolean[] bools;
 
-    public abstract String getIpAddres();
+    public abstract String getAddress();
 
-    public abstract void setIpAddress(String ipAddress);
+    public abstract void setIpAddress(String address);
 
     public abstract boolean isAutoConnect();
 

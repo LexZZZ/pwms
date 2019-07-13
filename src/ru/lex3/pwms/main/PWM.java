@@ -1,29 +1,25 @@
 package ru.lex3.pwms.main;
 
 import ru.lex3.pwms.interfaces.*;
-import ru.lex3.pwms.moka7.S7Client;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 public class PWM implements Runnable {
     private PLC plc;
-
-    private String plcName;
+    private String deviceName;
 
     private ArrayList<PLCData> sensors;
 
     private PLCDataPerformer dataPerformer;
     private PLCConnectionSettingsLoader plcSettingsLoader;
-
     private PLCConnectionSettingsSaver plcSettingsSaver;
 
     private UICallback uiCallback;
 
     private int timeout = 50;
-    public PWM(String plcName) {
-        this.plcName = plcName;
+    public PWM(String deviceName) {
+        this.deviceName = deviceName;
     }
 
     public synchronized boolean read() {
@@ -67,8 +63,8 @@ public class PWM implements Runnable {
         this.plc = plc;
     }
 
-    public String getPlcName() {
-        return plcName;
+    public String getDeviceName() {
+        return deviceName;
     }
 
     public void setDataPerformer(PLCDataPerformer dataPerformer) {
@@ -101,11 +97,11 @@ public class PWM implements Runnable {
     @Override
     public void run() {
         //System.out.println("EDT? " + SwingUtilities.isEventDispatchThread());
-        System.out.println("Mashine " + getPlcName() + " was started");
+        System.out.println("Mashine " + getDeviceName() + " was started");
         while (!Thread.currentThread().isInterrupted()) {
             while (!plc.isConnected()) {
                 if (plc.getConnectionParameters().isAutoConnect()) {
-                    System.out.println("Connect to PLC: " + getPlcName());
+                    System.out.println("Connect to PLC: " + getDeviceName());
                     if (!connect()) {
                         waitBeforeRepeat((int) plc.getConnectionParameters().getIdleTimeUntilConnect());
                     }

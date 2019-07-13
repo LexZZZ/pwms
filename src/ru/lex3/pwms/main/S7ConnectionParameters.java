@@ -10,7 +10,7 @@ public class S7ConnectionParameters extends PLCConnectionParameters {
         this.bools = bools;
     }
 
-    public String getIpAddres() {
+    public String getAddress() {
         try {
             return strings[0];
         } catch (Exception e) {
@@ -18,11 +18,11 @@ public class S7ConnectionParameters extends PLCConnectionParameters {
         }
     }
 
-    public void setIpAddress(String ipAddress) {
+    public void setIpAddress(String address) {
         try {
-            strings[0] = ipAddress;
+            strings[0] = address;
         } catch (Exception e) {
-            strings = new String[]{ipAddress};
+            strings = new String[]{address};
         }
     }
 
@@ -98,7 +98,6 @@ public class S7ConnectionParameters extends PLCConnectionParameters {
         }
     }
 
-    @Override
     public void setIdleTimeUntilConnect(int idleTimeUntilConnect) {
         try {
             ints[2] = idleTimeUntilConnect;
