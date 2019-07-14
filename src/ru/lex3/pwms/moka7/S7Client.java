@@ -625,10 +625,9 @@ public class S7Client implements PLC {
 
 
     @Override
-    public int readData(PLCData plcData, byte[] data) {
-
-
-        return readArea(plcData.getPlcServiceData().data[0], plcData.getPlcServiceData().data[1], plcData.getPlcServiceData().data[2], plcData.getPlcServiceData().data[3], data);
+    public int readData(PLCData plcData) {
+        return readArea(plcData.getPlcServiceData().data[0], plcData.getPlcServiceData().data[1],
+                plcData.getPlcServiceData().data[2], plcData.getPlcServiceData().data[3], plcData.getPlcServiceData().getBuffer());
     }
 
     public int readArea(int area, int dbNumber, int start, int amount, byte[] data) {
@@ -709,8 +708,9 @@ public class S7Client implements PLC {
     }
 
     @Override
-    public int writeData(PLCData plcData, byte[] data) {
-        return writeArea(plcData.getPlcServiceData().data[0], plcData.getPlcServiceData().data[1], plcData.getPlcServiceData().data[4], plcData.getPlcServiceData().data[5], data);
+    public int writeData(PLCData plcData) {
+        return writeArea(plcData.getPlcServiceData().data[0], plcData.getPlcServiceData().data[1],
+                plcData.getPlcServiceData().data[4], plcData.getPlcServiceData().data[5], plcData.getPlcServiceData().getBuffer());
     }
 
     public int writeArea(int area, int dbNumber, int start, int amount, byte[] data) {

@@ -6,24 +6,9 @@ import ru.lex3.pwms.interfaces.PLCDataPerformer;
 import ru.lex3.pwms.moka7.S7;
 
 public class S7DataPerformer implements PLCDataPerformer {
-    private PLC plc;
 
-    @Override
-    public void readDataFromPLC(PLCData plcData) {
-        byte[] buffer = new byte[128];
-        plc.readData(plcData, buffer);
-        convertByteToData(plcData, buffer);
-        plcData.initValues();
-    }
-
-    @Override
-    public void writeDataToPLC(PLCData plcData) {
-        plcData.initBuffer();
-        byte[] buffer = convertDataToByte(plcData);
-        plc.writeData(plcData, buffer);
-    }
-
-    private void convertByteToData(PLCData plcData, byte[] buffer) {
+    public void convertByteToData(PLCData plcData) {
+        byte[] buffer = plcData.getPlcServiceData().getBuffer();
         plcData.floats[0] = S7.getFloatAt(buffer, 0);
         plcData.floats[1] = S7.getFloatAt(buffer, 4);
         plcData.floats[2] = S7.getFloatAt(buffer, 8);
@@ -38,8 +23,8 @@ public class S7DataPerformer implements PLCDataPerformer {
         plcData.bits[1] = S7.getBitAt(buffer, 40, 1);
     }
 
-    private byte[] convertDataToByte(PLCData plcData) {
-        byte[] buffer = new byte[28];
+    public void convertDataToByte(PLCData plcData) {
+        byte[] buffer = plcData.getPlcServiceData().getBuffer();
         S7.setDIntAt(buffer, 0, plcData.ints[0]);
         S7.setFloatAt(buffer, 4, plcData.floats[3]);
         S7.setFloatAt(buffer, 8, plcData.floats[4]);
@@ -47,17 +32,5 @@ public class S7DataPerformer implements PLCDataPerformer {
         S7.setFloatAt(buffer, 16, plcData.floats[6]);
         S7.setFloatAt(buffer, 20, plcData.floats[7]);
         S7.setFloatAt(buffer, 24, plcData.floats[8]);
-
-        return buffer;
-    }
-
-    @Override
-    public void setPLC(PLC plc) {
-        this.plc = plc;
-    }
-
-    @Override
-    public PLC getPLC() {
-        return plc;
     }
 }

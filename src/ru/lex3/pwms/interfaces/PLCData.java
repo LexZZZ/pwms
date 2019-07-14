@@ -1,13 +1,16 @@
 package ru.lex3.pwms.interfaces;
 
-public abstract class PLCData{
+public abstract class PLCData {
     protected PLCServiceData serviceData;
 
     public boolean[] bits;
 
     public int[] ints;
+
     public float[] floats;
+
     public abstract void initValues();
+
     public abstract void initBuffer();
 
     public PLCData(PLCServiceData serviceData) {

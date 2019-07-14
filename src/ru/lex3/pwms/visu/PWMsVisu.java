@@ -141,7 +141,7 @@ public class PWMsVisu extends JFrame {
 
             sensors = new ArrayList<>();
             for (int j = 0; j < 2; j++) {
-                plcData = new S7Data(new S7ServiceData(plc, new int[]{S7.S7_AREA_DB, 4, j * 42, 42, (j * 42) + 12, 28}));
+                plcData = new S7Data(new S7ServiceData(new int[]{S7.S7_AREA_DB, 4, j * 42, 42, (j * 42) + 12, 28}, new byte[64]));
                 sensors.add(plcData);
             }
 

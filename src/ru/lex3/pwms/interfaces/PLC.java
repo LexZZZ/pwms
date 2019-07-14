@@ -5,12 +5,11 @@ public interface PLC {
      * PLCDataPerformer methods
      *
      * @param plcData
-     * @param data
      * @return
      */
-    public int writeData(PLCData plcData, byte[] data);
+    public int writeData(PLCData plcData);
 
-    public int readData(PLCData plcData, byte[] data);
+    public int readData(PLCData plcData);
 
 
     /**

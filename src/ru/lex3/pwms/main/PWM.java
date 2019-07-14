@@ -18,14 +18,18 @@ public class PWM implements Runnable {
     private UICallback uiCallback;
 
     private int timeout = 50;
+
     public PWM(String deviceName) {
         this.deviceName = deviceName;
     }
 
     public synchronized boolean read() {
         if (plc.isConnected()) {
-            for (PLCData plcData : sensors)
-                dataPerformer.readDataFromPLC(plcData);
+            for (PLCData plcData : sensors) {
+                plc.readData(plcData);
+                dataPerformer.convertByteToData(plcData);
+                plcData.initValues();
+            }
             return true;
         } else
             return false;
@@ -34,13 +38,17 @@ public class PWM implements Runnable {
     public synchronized boolean write() {
         System.out.println("Write begin");
         if (plc.isConnected()) {
-            for (PLCData plcData : sensors)
-                dataPerformer.writeDataToPLC(plcData);
+            for (PLCData plcData : sensors) {
+                plcData.initBuffer();
+                dataPerformer.convertDataToByte(plcData);
+                plc.writeData(plcData);
+            }
             System.out.println("Write end");
             return true;
+
         } else
             System.out.println("Write end");
-            return false;
+        return false;
     }
 
     public synchronized boolean connect() {
@@ -71,7 +79,7 @@ public class PWM implements Runnable {
         this.dataPerformer = dataPerformer;
     }
 
-    public void setUICallback(UICallback uiCallback){
+    public void setUICallback(UICallback uiCallback) {
         this.uiCallback = uiCallback;
     }
 

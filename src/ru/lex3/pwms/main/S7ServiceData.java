@@ -7,7 +7,6 @@ public class S7ServiceData extends PLCServiceData {
 
     /**
      *
-     * @param plc - implementation of PLC interface
      * @param data - [0] - S7 area number;
      *               [1] - DB number;
      *               [2] - startRead byte tor read from DB to byte[] buffer;
@@ -15,8 +14,8 @@ public class S7ServiceData extends PLCServiceData {
      *               [4] - startRead byte tor tor write to DB from byte[] buffer;
      *               [5] - quantity bytes tor write to DB from byte[] buffer;
      */
-    public S7ServiceData(PLC plc, int[] data) {
-        super(plc, data);
+    public S7ServiceData(int[] data, byte[] buffer) {
+        super(data, buffer);
     }
 
     public int getDB(){
