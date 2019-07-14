@@ -7,19 +7,20 @@ import java.util.concurrent.TimeUnit;
 
 public class PWM implements Runnable {
     private PLC plc;
-    private String deviceName;
 
+    private String deviceName;
     private ArrayList<PLCData> sensors;
 
     private PLCDataPerformer dataPerformer;
+
     private PLCConnectionSettingsLoader plcSettingsLoader;
     private PLCConnectionSettingsSaver plcSettingsSaver;
-
     private UICallback uiCallback;
 
     private int timeout = 50;
 
-    public PWM(String deviceName) {
+    public PWM(PLC plc, String deviceName) {
+        this.plc = plc;
         this.deviceName = deviceName;
     }
 
@@ -45,7 +46,6 @@ public class PWM implements Runnable {
             }
             System.out.println("Write end");
             return true;
-
         } else
             System.out.println("Write end");
         return false;
@@ -61,14 +61,6 @@ public class PWM implements Runnable {
 
     public void setSensors(ArrayList<PLCData> sensors) {
         this.sensors = sensors;
-    }
-
-    public PLC getPlc() {
-        return plc;
-    }
-
-    public void setPlc(PLC plc) {
-        this.plc = plc;
     }
 
     public String getDeviceName() {
@@ -89,6 +81,10 @@ public class PWM implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public PLC getPlc() {
+        return plc;
     }
 
     /**

@@ -85,6 +85,7 @@ public class PWMsVisu extends JFrame {
             public void windowOpened(WindowEvent arg0) {
                 formWindowOpened(arg0);
             }
+
             @Override
             public void windowClosing(WindowEvent e) {
                 formWindowClosing(e);
@@ -132,24 +133,33 @@ public class PWMsVisu extends JFrame {
         PWM pwm;
         PLC plc;
         ArrayList<PLCData> sensors;
-        PLCData plcData;
         PLCDataPerformer plcDataPerformer;
 
         for (int i = 0; i < 20; i++) {
-            pwm = new PWM("A" + i);
+            /**
+             * Create a new PLC object
+             */
             plc = new S7Client(new S7ConnectionParameters(new String[]{}, new int[]{}, new boolean[]{}));
 
+            /**
+             * Create the data arrays
+             */
             sensors = new ArrayList<>();
-            for (int j = 0; j < 2; j++) {
-                plcData = new S7Data(new S7ServiceData(new int[]{S7.S7_AREA_DB, 4, j * 42, 42, (j * 42) + 12, 28}, new byte[64]));
-                sensors.add(plcData);
-            }
+            for (int j = 0; j < 2; j++)
+                sensors.add(new S7Data(new S7ServiceData(new int[]{S7.S7_AREA_DB, 4, j * 42, 42, (j * 42) + 12, 28}, new byte[64])));
 
+            /**
+             * Create a data converter
+             */
             plcDataPerformer = new S7DataPerformer();
 
-            pwm.setPlc(plc);
+            /**
+             * Finish stage of creating mashine
+             */
+            pwm = new PWM(plc, "A" + i);
             pwm.setDataPerformer(plcDataPerformer);
             pwm.setSensors(sensors);
+
 
             workPanels.add(new WorkPanel(pwm, x, y));
             if (y + 113 > 680) {
